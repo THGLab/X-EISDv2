@@ -1,10 +1,10 @@
-sampleproject
-=============
+X-EISDv2
+========
 
 .. testsetup::
 
-    from sampleproject import *
+    from xeisd import *
 
-.. automodule:: sampleproject
+.. automodule:: xeisd
     :members:
 
