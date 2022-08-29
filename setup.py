@@ -35,7 +35,7 @@ long_description = '{}\n{}'.format(
     )
 
 setup(
-    name='jmct-sampleproject',
+    name='jmct-eisd',
     version='0.11.1',
     description='A skeleton template for Python projects.',
     long_description=long_description,
@@ -94,7 +94,7 @@ setup(
         ],
     entry_points={
         'console_scripts': [
-            'samplecli1= sampleproject.cli_int1:main',
+            'samplecli1= eisd.cli_int1:main',
             ]
         #
         },

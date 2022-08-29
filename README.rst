@@ -1,25 +1,6 @@
-Python Package Skeleton Template
-================================
+X-EISDv2
+========
 
-.. image:: https://github.com/joaomcteixeira/python-project-skeleton/workflows/ci/badge.svg?branch=main
-    :target: https://github.com/joaomcteixeira/python-project-skeleton/actions?workflow=ci
-    :alt: CI
-
-.. image:: https://codecov.io/gh/joaomcteixeira/python-project-skeleton/branch/main/graph/badge.svg
-    :target: https://codecov.io/gh/joaomcteixeira/python-project-skeleton
-    :alt: Codecov
-
-.. image:: https://api.codeclimate.com/v1/badges/d96cc9a1841a819cd4f5/maintainability
-   :target: https://codeclimate.com/github/joaomcteixeira/python-project-skeleton/maintainability
-   :alt: Maintainability
-
-.. image:: https://img.shields.io/codeclimate/tech-debt/joaomcteixeira/python-project-skeleton
-    :target: https://codeclimate.com/github/joaomcteixeira/python-project-skeleton
-    :alt: Code Climate technical debt
-
-.. image:: https://img.shields.io/readthedocs/python-project-skeleton/latest?label=Read%20the%20Docs
-    :target: https://python-project-skeleton.readthedocs.io/en/latest/index.html
-    :alt: Read the Docs
 
 Summary
 -------
@@ -123,28 +104,4 @@ list your work above, as well.
 Version
 -------
 
-v0.11.1
-
-.. _GitHub Actions: https://github.com/features/actions
-.. _PyPI: https://pypi.org
-.. _blog post: https://blog.ionelmc.ro/2014/05/25/python-packaging/
-.. _bump2version: https://github.com/c4urself/bump2version
-.. _cookiecutter-pylibrary: https://github.com/ionelmc/cookiecutter-pylibrary
-.. _cookiecutter: https://cookiecutter.readthedocs.io/en/latest/index.html
-.. _discussion: https://github.com/joaomcteixeira/python-project-skeleton/discussions
-.. _documentation: https://python-project-skeleton.readthedocs.io/
-.. _even for scientific software: https://github.com/MolSSI/cookiecutter-cms
-.. _hypothesis: https://hypothesis.readthedocs.io/en/latest/
-.. _ionel: https://github.com/ionelmc
-.. _issue: https://github.com/joaomcteixeira/python-project-skeleton/issues
-.. _latest branch: https://github.com/joaomcteixeira/python-project-skeleton/tree/latest
-.. _master branch: https://github.com/joaomcteixeira/python-project-skeleton/tree/master
-.. _pdb-tools: https://github.com/haddocking/pdb-tools/blob/2a070bbacee9d6608b44bb6d2f749beefd6a7690/.github/workflows/bump-version-on-push.yml
-.. _project's documentation: https://python-project-skeleton.readthedocs.io/en/latest/index.html
-.. _pytest: https://docs.pytest.org/en/stable/
-.. _python-nameless: https://github.com/ionelmc/python-nameless
-.. _structlog: https://github.com/hynek/structlog
-.. _test.pypi.org: https://test.pypi.org
-.. _tox-gh-actions: https://github.com/ymyzk/tox-gh-actions
-.. _tox: https://tox.readthedocs.io/en/latest/
-.. _ReadTheDocs: https://readthedocs.org/
+v0.0.0

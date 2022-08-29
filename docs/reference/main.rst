@@ -1,10 +1,10 @@
-sampleproject
+eisd
 =============
 
 .. testsetup::
 
-    from sampleproject import *
+    from eisd import *
 
-.. automodule:: sampleproject
+.. automodule:: eisd
     :members:
 
