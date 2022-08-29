@@ -6,7 +6,7 @@ import os
 import sys
 
 import mock
-import sphinx_py3doc_enhanced_theme
+import sphinx_rtd_theme
 
 
 mock_modules = [
@@ -65,10 +65,10 @@ linkcheck_ignore = [
     r'https://codecov.io/gh/THGLab/X-EISDv2/*',
     ]
 
-html_theme = "sphinx_py3doc_enhanced_theme"
-html_theme_path = [sphinx_py3doc_enhanced_theme.get_html_theme_path()]
+html_theme = "sphinx_rtd_theme"
+html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 html_theme_options = {
-    'githuburl': 'https://github.com/joaomcteixeira/X-EISDv2',
+    'githuburl': 'https://github.com/THGLab/X-EISDv2',
     }
 
 html_use_smartypants = True
