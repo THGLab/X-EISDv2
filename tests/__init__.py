@@ -1,1 +1,1 @@
-"""Test suite for eisd."""
+"""Test suite for xeisd."""

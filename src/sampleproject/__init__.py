@@ -1,3 +1,3 @@
-"""Initial documentation of eisd."""
+"""Initial documentation of xeisd."""
 
-__version__ = '0.11.1'
+__version__ = '0.0.0'

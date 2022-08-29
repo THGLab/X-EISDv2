@@ -35,15 +35,15 @@ long_description = '{}\n{}'.format(
     )
 
 setup(
-    name='jmct-eisd',
-    version='0.11.1',
+    name='xeisd',
+    version='0.0.0',
     description='A skeleton template for Python projects.',
     long_description=long_description,
     long_description_content_type='text/x-rst',
-    license='MIT License',
-    author='Joao Miguel Correia Teixeira',
-    author_email='joaomcteixeira@gmail.com',
-    url='https://github.com/joaomcteixeira/python-project-skeleton',
+    license='Apache 2.0 License',
+    author='Zi Hao Liu',
+    author_email='nemo.liu@sickkids.ca',
+    url='https://github.com/THGLab/X-EISDv2',
     packages=find_packages('src'),
     package_dir={'': 'src'},
     py_modules=[splitext(basename(i))[0] for i in glob("src/*.py")],
@@ -67,11 +67,11 @@ setup(
         'Topic :: Scientific/Engineering :: Bio-Informatics',
         ],
     project_urls={
-        'webpage': 'https://github.com/joaomcteixeira/python-project-skeleton',
-        'Documentation': 'https://python-project-skeleton.readthedocs.io/en/latest/',
-        'Changelog': 'https://github.com/joaomcteixeira/python-project-skeleton/blob/master/CHANGELOG.rst',
-        'Issue Tracker': 'https://github.com/joaomcteixeira/python-project-skeleton/issues',
-        'Discussion Forum': 'https://github.com/joaomcteixeira/python-project-skeleton/discussions',
+        'webpage': 'https://github.com/THGLab/X-EISDv2',
+        'Documentation': 'https://X-EISDv2.readthedocs.io/en/latest/',
+        'Changelog': 'https://github.com/THGLab/X-EISDv2/blob/master/CHANGELOG.rst',
+        'Issue Tracker': 'https://github.com/THGLab/X-EISDv2/issues',
+        'Discussion Forum': 'https://github.com/THGLab/X-EISDv2/discussions',
         },
     keywords=[
         'ci', 'continuous-integration', 'project-template',
@@ -94,7 +94,7 @@ setup(
         ],
     entry_points={
         'console_scripts': [
-            'samplecli1= eisd.cli_int1:main',
+            'samplecli1= xeisd.cli_int1:main',
             ]
         #
         },

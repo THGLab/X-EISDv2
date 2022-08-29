@@ -1,10 +1,10 @@
-eisd
-=============
+X-EISDv2
+========
 
 .. testsetup::
 
-    from eisd import *
+    from xeisd import *
 
-.. automodule:: eisd
+.. automodule:: xeisd
     :members:
 

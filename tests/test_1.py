@@ -1,6 +1,6 @@
 """Performs general tests."""
 import amodule
-from eisd.libs import samplemodule as SM
+from xeisd.libs import samplemodule as SM
 
 
 def test_amodule():

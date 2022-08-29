@@ -1,5 +1,5 @@
 """Test main command-line client."""
-from eisd.cli_int1 import main
+from xeisd.cli_int1 import main
 
 
 def test_main():

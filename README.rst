@@ -60,7 +60,7 @@ recommend reading his `blog post`_ and references herein.
 
 I configured the CI pipeline to my needs by taking bits and pieces from many
 places. Kudos to `python-nameless`_ and `cookiecutter-pylibrary`_; two primary
-sources of information for the *python-project-skeleton* repository, especially
+sources of information for the *X-EISDv2* repository, especially
 in the first versions using Travis and Appveyor.
 
 When migrating to GitHub Actions, I based my choices on the version bump and
@@ -95,7 +95,7 @@ their CI implementations:
 * `julie-forman-kay-lab/IDPConformerGenerator <https://github.com/julie-forman-kay-lab/IDPConformerGenerator>`_
 * `haddocking/HADDOCK3 <https://github.com/haddocking/haddock3>`_
 * `THGLab/MCSCE <https://github.com/THGLab/MCSCE>`_
-* `joaomcteixeira/taurenmd <https://github.com/joaomcteixeira/taurenmd>`_
+* `THGLab/taurenmd <https://github.com/THGLab/taurenmd>`_
 * `MDAnalysis/mdacli <https://github.com/MDAnalysis/mdacli>`_
 
 If you use this repository as a reference for your works, let me know, so I
