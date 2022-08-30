@@ -2,6 +2,9 @@
 Changelog
 =========
 
+v0.0.2 (2022-08-30)
+------------------------------------------------------------
+
 * Core CLI and libraries (#2)
 * Rename docs for README and setup.py
 
