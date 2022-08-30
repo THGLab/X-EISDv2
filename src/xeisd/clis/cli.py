@@ -1,6 +1,13 @@
 """
 X-EISDv2.
-Main client interface to store access to modules
+
+Command-line interface for scoring and reweighting functions
+for protein ensembles. Core logic based on X-EISD: extended
+experimental inferential structure determination.
+
+Please see: https://github.com/THGLab/X-EISD
+for reference and citing.
+
 USAGE:
     For help:
     $ xeisd -h
@@ -8,23 +15,22 @@ USAGE:
 import argparse
 import sys
 
+from xeisd import __version__, log
+
 from xeisd.libs import libcli
 from xeisd.logger import S
-from xeisd import(
-    __version__,
-    log,
-    # Rest of the CLI modules go here
-    )
 
-_prog, _description, _usageage = libcli,libcli.parse_doc_params(__doc__)
+_prog, _description, _usageage = libcli.parse_doc_params(__doc__)
 
 description = f"""
 {_description}
-    * Name goes here
+
+Core functions:
+    *
 """
 
 ap = libcli.CustomParser(
-    prog='spycipdb',  # _prog,
+    prog='xeisd',  # _prog,
     description=libcli.detailed.format(description),
     usage=_usageage,
     formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -33,9 +39,10 @@ ap = libcli.CustomParser(
 libcli.add_version(ap)
 
 subparsers = ap.add_subparsers(
-    title='SPyCi-PDB routines',
+    title='X-EISD routines',
     help='Short description:',
 )
+
 
 def load_args():
     """Load user input arguments."""
@@ -54,7 +61,7 @@ def maincli():
 
     cmd = load_args()
 
-    with open('idpconfgen.version', 'w') as fout:
+    with open('xeisd.version', 'w') as fout:
         fout.write(f'version: {__version__}')
 
     cmd.func(**vars(cmd))
