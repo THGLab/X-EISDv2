@@ -92,7 +92,7 @@ setup(
         ],
     entry_points={
         'console_scripts': [
-            'samplecli1= xeisd.cli_int1:main',
+            'xeisd = xeisd.clis.cli:maincli',
             ]
         #
         },
