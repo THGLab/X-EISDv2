@@ -9,6 +9,7 @@ import argparse
 import sys
 
 from xeisd.libs import libcli
+from xeisd.logger import S
 from xeisd import(
     __version__,
     log,

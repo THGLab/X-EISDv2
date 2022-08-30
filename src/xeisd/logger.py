@@ -10,8 +10,8 @@ from inspect import signature
 from pathlib import Path
 from time import time_ns
 
-from spycipdb import log
-from spycipdb.core.exceptions import ReportOnCrashError
+from xeisd import log
+from xeisd.core.exceptions import ReportOnCrashError
 
 
 def titlelog(msg, *args):
