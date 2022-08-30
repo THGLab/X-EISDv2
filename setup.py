@@ -72,8 +72,8 @@ setup(
         'Discussion Forum': 'https://github.com/THGLab/X-EISDv2/discussions',
         },
     keywords=[
-        'ci', 'continuous-integration', 'project-template',
-        'project-skeleton', 'sample-project',
+        'xeisd', 'bayesian statistics', 'reweighting', 'disordered proteins',
+        'biochemistry', 'biophysics', 'ensembles',
         # eg: 'keyword1', 'keyword2', 'keyword3',
         ],
     python_requires='>=3.8, <4',
