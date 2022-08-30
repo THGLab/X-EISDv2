@@ -19,6 +19,9 @@ from xeisd import __version__, log
 
 from xeisd.libs import libcli
 from xeisd.logger import S
+from xeisd.clis import (
+    cli_score,
+    )
 
 _prog, _description, _usageage = libcli.parse_doc_params(__doc__)
 
@@ -26,7 +29,7 @@ description = f"""
 {_description}
 
 Core functions:
-    *
+    * {cli_score._name}
 """
 
 ap = libcli.CustomParser(
@@ -43,6 +46,7 @@ subparsers = ap.add_subparsers(
     help='Short description:',
 )
 
+libcli.add_subparser(subparsers, cli_score)
 
 def load_args():
     """Load user input arguments."""
