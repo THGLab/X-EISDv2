@@ -4,6 +4,7 @@ Changelog
 
 * Score module (#4)
 * Main logic for scoring functions in core/components directory
+* Installation of IDPConformerGenerator on top of X-EISDv2
 
 v0.0.3 (2022-08-30)
 ------------------------------------------------------------
