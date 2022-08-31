@@ -36,15 +36,18 @@ from xeisd import Path, log
 from xeisd.libs import libcli
 from xeisd.logger import S, T, init_files, report_on_crash
 
-from idpconfgen.libs.libfunc import consume
-from idpconfgen.libs.libio import (
-    extract_from_tar,
-    read_path_bundle,
-    FileReaderIterator,
-    save_dict_to_json,
+from xeisd.components import (
+    default_bc_errors,
+    parse_mode_exp,
+    parse_mode_back,
+    meta_data,
     )
-from idpconfgen.libs.libmulticore import consume_iterable_in_list, pool_function, starunpack
-from idpconfgen.libs.libparse import pop_difference_with_log
+from xeisd.components.optimizer import XEISD
+from xeisd.components.parser import parse_data
+
+from idpconfgen.libs.libstructure import Structure
+from idpconfgen.libs.libio import extract_from_tar, read_path_bundle
+from idpconfgen.libs.libmulticore import pool_function
 
 LOGFILESNAME = '.xeisd_score'
 TMPDIR = '__tmpscore__'
@@ -81,9 +84,9 @@ ap.add_argument(
 
 def main(
         exp_files,
-        pdb_files,
-        back_files,
         epochs,
+        pdb_files=None,
+        back_files=None,
         output=None,
         ncores=1,
         tmpdir=TMPDIR,
@@ -118,6 +121,10 @@ def main(
     """
     init_files(log, LOGFILESNAME)
     
+    if pdb_files == None and back_files == None:
+        log.info(S('WARNING: you must provide either PDB files or back-calculated files.'))
+        return
+    
     log.info(T('Reading conformer ensemble paths'))
     _istarfile = False
     if pdb_files:
@@ -128,7 +135,40 @@ def main(
             pdbs2operate = list(read_path_bundle(pdb_files, ext='pdb'))
             _istarfile = False
         log.info(S('done'))
+        
+        ens_size = len(pdbs2operate)
+        
+        s = Structure(pdbs2operate[0])
+        s.build()
+        nres = len(s.residues)
     
+    log.info(T('Checking experimental data files'))
+    filenames, errs = meta_data(exp_files)
+    if errs:
+        for e in errs:
+            log.info(S(e))
+        if filenames == {}:
+            log.info(S('done'))
+            return
+    log.info(S('done'))
+    exp_paths = parse_data(filenames[parse_mode_exp], mode=parse_mode_exp)
+    
+    if back_files:
+        back_paths = parse_data(filenames[parse_mode_back], parse_mode_back, default_bc_errors)
+    #TODO: perform back-calculation via SPyCi-PDB
+    
+    eisd_ens = XEISD(exp_paths, back_paths, ens_size, nres)
+    log.info(T(f'Starting X-EISD Scoring'))
+    execute = partial (
+        report_on_crash,
+        eisd_ens.calc_scores,
+        epochs=epochs,
+        ens_size=ens_size,        
+        )
+    execute_pool = pool_function(execute, ncores=ncores)
+    #TODO: print output to stdout or save to disk
+    
+    log.info(S('done'))
     
     if _istarfile:
         shutil.rmtree(tmpdir)
