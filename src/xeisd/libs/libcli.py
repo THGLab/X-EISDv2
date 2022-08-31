@@ -145,20 +145,85 @@ def add_version(parser):
         )
 
 
-def add_argument_pdb_files(parser):
+def add_argument_exp_files(parser):
     """
-    Add PDBs Files entry to argument parser.
+    Add experimental files entry to argument parser.
+    
     Parameters
     ----------
     parser : `argparse.ArgumentParser` object
     """
     parser.add_argument(
-        'pdb_files',
+        '-exp',
+        '--exp-files',
+        help=(
+            'Path to the folder containing experimental '
+            'and data files in .TXT or .CSV format.'
+            ),
+        type=str,
+        required=True,
+        default=None,
+        )
+    
+    
+def add_argument_back_files(parser):
+    """
+    Add back-calculated files entry to argument parser.
+    
+    Parameters
+    ----------
+    parser : `argparse.ArgumentParser` object
+    """
+    parser.add_argument(
+        '-bck',
+        '--back-files',
+        help=(
+            'Path to the folder containing back-calculation '
+            'data files in .JSON format.'
+            ),
+        type=str,
+        required=False,
+        default=None,
+        )
+
+
+def add_argument_epochs(parser):
+    """
+    Add number of epochs to argument parser.
+    
+    Parameters
+    ----------
+    parser : `argparse.ArgumentParser` object
+    """
+    parser.add_argument(
+        '-eps',
+        '--epochs',
+        help=(
+            'Number of times to run main optimization,'
+            ' recommended at least the size of your'
+            ' ensemble.'          
+            ),
+    type=int,
+    required=True,
+    )
+
+def add_argument_pdb_files(parser):
+    """
+    Add PDBs Files entry to argument parser.
+    
+    Parameters
+    ----------
+    parser : `argparse.ArgumentParser` object
+    """
+    parser.add_argument(
+        '-pdbs',
+        '--pdb-files',
         help=(
             'Paths to PDB files in the disk. '
             'Accepts a TAR file.'
             ),
-        nargs='+',
+        type=str,
+        default=None,
         action=FolderOrTar,
         )
 
