@@ -5,8 +5,8 @@ Installation
 X-EISDv2 uses only Python-based APIs for which we expect it to run
 native on any system Python can run.
 
-Please note that the IDPConformerGenerator library is required for parsing
-PDB structure co-ordinates. Details for IDPConformerGenerator
+Please note that the IDPConformerGenerator library is required for 
+multiprocessing logic and parsing PDB files. Details for IDPConformerGenerator
 can be found `here <https://github.com/julie-forman-kay-lab/IDPConformerGenerator>`_.
 
 Please note that SPyCi-PDB is required to automate and perform back-calculations
@@ -99,12 +99,12 @@ Navigate to the new ``IDPConformerGenerator`` folder::
 Run the following commands to install ``idpconfgen`` dependencies if
 Anaconda is used as your Python package manager::
 
-    conda env update --name spycipdb --file requirements.yml --prune
-    conda activate spycipdb
+    conda env update --name xeisd --file requirements.yml --prune
+    conda activate xeisd
     python setup.py develop --no-deps
     
 Run the following commands to install ``idpconfgen`` dependencies if
-virtualenv was used to install SPyCi-PDB::
+virtualenv was used to install X-EISDv2::
 
     pip install -r requirements.txt
     python setup.py develop --no-deps
