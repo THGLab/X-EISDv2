@@ -156,6 +156,9 @@ def main(
     if back_files:
         back_paths = parse_data(filenames[parse_mode_back], parse_mode_back, default_bc_errors)
     #TODO: perform back-calculation via SPyCi-PDB
+    # - make temporary files with the back-calculations to be removed later in tmpdir
+    # - back_paths will point to files within tmpdir, or another directory
+    # this way, we can save on the parsing steps
     
     eisd_ens = XEISD(exp_paths, back_paths, ens_size, nres)
     log.info(T(f'Starting X-EISD Scoring'))
