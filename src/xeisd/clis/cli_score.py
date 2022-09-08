@@ -15,10 +15,11 @@ of interest and starting with `exp_`.
     exp_*.noe, exp_*.pre, exp_*.rdc, exp_*.rh
     
 For back-calculated files (if they're already in the correct format),
-please start them with the `back_` prefix, ending with the same file extensions as seen above.
+please start them with the `bc_` prefix, ending with the same file extensions as seen above.
+The internal formatting can be .JSON however.
     
     For example:
-    back_*.saxs, back_*.cs, back_*.fret, etc.
+    bc_*.saxs, bc_*.cs, bc_*.fret, etc.
 
 USAGE:
     $ xeisd score [--exp-files] [--back-files] [--epochs]
@@ -42,6 +43,7 @@ from xeisd.components import (
     parse_mode_back,
     meta_data,
     )
+from xeisd.components.parser import parse_bc_errors
 from xeisd.components.optimizer import XEISD
 from xeisd.components.parser import parse_data
 
@@ -64,9 +66,9 @@ ap = libcli.CustomParser(
     formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
-libcli.add_argument_exp_files(ap)
+libcli.add_argument_data_files(ap)
 libcli.add_argument_pdb_files(ap)
-libcli.add_argument_back_files(ap)
+libcli.add_argument_custom_bc_error(ap)
 libcli.add_argument_epochs(ap)
 libcli.add_argument_output(ap)
 libcli.add_argument_ncores(ap)
@@ -83,10 +85,10 @@ ap.add_argument(
 
 
 def main(
-        exp_files,
+        data_files,
         epochs,
+        custom_error=None,
         pdb_files=None,
-        back_files=None,
         output=None,
         ncores=1,
         tmpdir=TMPDIR,
@@ -97,16 +99,19 @@ def main(
 
     Parameters
     ----------
-    pdb_files : str or Path, required
-        Path to PDB files on the disk. Accepts TAR file.
-    
     exp_files : str or Path, required
         Path to the folder containing experimental
         data files.
         
+    pdb_files : str or Path, optional
+        Path to PDB files on the disk. Accepts TAR file.
+        
     back_files : str or Path, optional
         Path to the folder containing experimental
         data files.
+    
+    custom_error : str or Path, optional
+        Path to the file containing custom back-calculator errors.
     
     epochs : int, required
         Number of times to run main optimization.
@@ -121,9 +126,9 @@ def main(
     """
     init_files(log, LOGFILESNAME)
     
-    if pdb_files == None and back_files == None:
-        log.info(S('WARNING: you must provide either PDB files or back-calculated files.'))
-        return
+    #if pdb_files == None and back_files == None:
+    #    log.info(S('WARNING: you must provide either PDB files or back-calculated files.'))
+    #    return
     
     log.info(T('Reading conformer ensemble paths'))
     _istarfile = False
@@ -142,24 +147,40 @@ def main(
         s.build()
         nres = len(s.residues)
     
-    log.info(T('Checking experimental data files'))
-    filenames, errs = meta_data(exp_files)
-    if errs:
-        for e in errs:
+    log.info(T('Checking experimental and back-calculation data files'))
+    filenames, tobc, _meta_errs = meta_data(data_files)
+    if _meta_errs:
+        for e in _meta_errs:
             log.info(S(e))
         if filenames == {}:
             log.info(S('done'))
             return
     log.info(S('done'))
-    exp_paths = parse_data(filenames[parse_mode_exp], mode=parse_mode_exp)
+
+    log.info(T('Parsing experimental and back-calculated files'))
+    exp_paths, _parse_errs = parse_data(filenames[parse_mode_exp], mode=parse_mode_exp)
+    if _parse_errs:
+        for e in _meta_errs:
+            log.info(S(e))
     
-    if back_files:
-        back_paths = parse_data(filenames[parse_mode_back], parse_mode_back, default_bc_errors)
+    if custom_error:
+        bc_errors = parse_bc_errors(custom_error)
+    else:
+        bc_errors = default_bc_errors
+    
     #TODO: perform back-calculation via SPyCi-PDB
     # - make temporary files with the back-calculations to be removed later in tmpdir
     # - back_paths will point to files within tmpdir, or another directory
     # this way, we can save on the parsing steps
+    if tobc:
+        for module in tobc:
+            
+    if filenames[parse_mode_back] != {}:
+        existing_back_paths, _parse_errs = \
+            parse_data(filenames[parse_mode_back], parse_mode_back, bc_errors)
     
+    back_paths = existing_back_paths
+
     eisd_ens = XEISD(exp_paths, back_paths, ens_size, nres)
     log.info(T(f'Starting X-EISD Scoring'))
     execute = partial (

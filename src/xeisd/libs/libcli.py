@@ -145,7 +145,7 @@ def add_version(parser):
         )
 
 
-def add_argument_exp_files(parser):
+def add_argument_data_files(parser):
     """
     Add experimental files entry to argument parser.
     
@@ -154,35 +154,14 @@ def add_argument_exp_files(parser):
     parser : `argparse.ArgumentParser` object
     """
     parser.add_argument(
-        '-exp',
-        '--exp-files',
+        '-f',
+        '--data-files',
         help=(
             'Path to the folder containing experimental '
-            'and data files in .TXT or .CSV format.'
+            'and back-calculated data.'
             ),
         type=str,
         required=True,
-        default=None,
-        )
-    
-    
-def add_argument_back_files(parser):
-    """
-    Add back-calculated files entry to argument parser.
-    
-    Parameters
-    ----------
-    parser : `argparse.ArgumentParser` object
-    """
-    parser.add_argument(
-        '-bck',
-        '--back-files',
-        help=(
-            'Path to the folder containing back-calculation '
-            'data files in .JSON format.'
-            ),
-        type=str,
-        required=False,
         default=None,
         )
 
@@ -258,3 +237,19 @@ def add_argument_output(parser):
         type=str,
         default=None,
         )
+
+
+def add_argument_custom_bc_error(parser):
+    """Add argument for custom back-calculator error file."""
+    parser.add_argument(
+        '-ce',
+        '--custom-error',
+        help=(
+            'Path to file for custom back-calculator errors. '
+            'First column should be module name, second column should be '
+            'error of interest. Do not add whitespace other than to '
+            'separate columns.'
+            ),
+        type=str,
+        default=None
+    )

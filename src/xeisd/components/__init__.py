@@ -163,13 +163,15 @@ def meta_data(fpath):
         differences = tuple(set(valid_exp_modules) ^ (set(valid_back_modules)))
         
         if differences:
-            exp_paths = [exp for exp in exp_paths if not exp.endswith(differences)]
+            # Do not clear `exp_paths` because we can do back-calculations internally
+            #exp_paths = [exp for exp in exp_paths if not exp.endswith(differences)]
             back_paths = [bck for bck in back_paths if not bck.endswith(differences)]
             errlog.append(
                 'Note: found inconsistent experimental and back-calculation'
-                ' data pairs. Keeping only paths of matching pairs of data.'
+                ' data pairs.'
                 )
-            errlog.append(f'Excluding: {differences}...')
+            errlog.append(f'Back-calculating for: {differences}...')
+            tobc = [module[1:] for module in differences]
     
     EXP_DATA_FILENAMES = {}
     BACK_DATA_FILENAMES = {}
@@ -187,4 +189,4 @@ def meta_data(fpath):
         parse_mode_back: BACK_DATA_FILENAMES,
         }
     
-    return meta, errlog
+    return meta, tobc, errlog
