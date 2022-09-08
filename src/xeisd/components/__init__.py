@@ -5,6 +5,7 @@ miscellaneous utility functions.
 Functions and logic inspired/imported from https://github.com/THGLab/X-EISD/
 """
 import os
+import numpy as np
 
 exp_idx = 'index'
 exp_resnum = 'resnum'
@@ -69,10 +70,10 @@ default_bc_errors = {
     rh_name: 0.812,
     rdc_name: 0.88,
     # cs error reported from UCBShift
-    cs_name: {'C': 1.31, 'CA': 0.97, 'CB': 1.29, 'H': 0.38, 'HA': 0.29} 
-    # J-coupling errors set by default
+    cs_name: {'C': 1.31, 'CA': 0.97, 'CB': 1.29, 'H': 0.38, 'HA': 0.29},
+    jc_name: {'A': np.sqrt(0.14), 'B': np.sqrt(0.03), 'C': np.sqrt(0.08)},
     }
-
+jc_bc_mu = {'A': 6.51, 'B': -1.76, 'C': 1.6}
 
 # The following two functions have been imported from:
 # https://github.com/THGLab/X-EISD/blob/master/eisd/utils/miscell.py

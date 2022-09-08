@@ -9,6 +9,7 @@ USAGE EXAMPLE:
     to a new text file.
     
     For example an exerpt from entry 4155:
+--BEGIN-FILE--
     _Atom_chem_shift.ID
     _Atom_chem_shift.Assembly_atom_ID
     _Atom_chem_shift.Entity_assembly_ID
@@ -33,11 +34,11 @@ USAGE EXAMPLE:
     9     .   2   .   1   4    4    ALA   H    H   1    8.419     .
     10    .   2   .   1   4    4    ALA   C    C   13   177.602   .
     11    .   2   .   1   4    4    ALA   CA   C   13   52.395    .
-
+--END-OF-FILE--
 Currently accepting the following formats for experimental data:
     SAXS: SASBDB (curve .DAT), CUSTOM
-    Chemical shift: NMR-STAR
-    FRET: (ask greg/claudiu for the "standard")
+    Chemical shift: NMR-STAR, CUSTOM
+    FRET: CUSTOM
     J-Couplings: NMR-STAR (coupling constants), CUSTOM
     NOE: NMR-STAR (homonuclear/distances), CUSTOM
     PRE: NMR STAR (changes in R2 or as distance (use NOE)), CUSTOM
@@ -53,7 +54,7 @@ CUSTOM format:
     
     SAXS: index,value,error
     CS: index,resnum,atomname,value,error
-    FRET: TBD
+    FRET: index,res1,res2,value,scale,error
     JC: index,resnum,value,error
     NOE: index,value,lower,upper,error*
     PRE: index,value,lower,upper,error*
@@ -62,9 +63,12 @@ CUSTOM format:
     
     For NOE and PRE, error* can be provided instead of lower+upper.
     
-TODO: FRET and Rh have custom "sigma" values in the Stack, be advised.
-NOTE: misc. information such as res1, atom1, etc. are for back-calculations.
+    !!IMPORTANT!!
+    Index is used for alignment purposes. For all modules EXCEPT SAXS,
+    where the index is the "X-axis value" of the scattering plot.
+    !!IMPORTANT!!
 """
+import ast
 import numpy as np
 import pandas as pd
 
@@ -84,6 +88,7 @@ from xeisd.components import (
     pre_name,
     rdc_name,
     rh_name,
+    default_bc_errors,
     )
 
 
@@ -108,7 +113,6 @@ class Stack():
 
 
 def parse_saxs_data(fpath):
-    # TODO: might have to change what index is
     index = []
     value = []
     error = []
@@ -213,6 +217,35 @@ def parse_nmrstar_data(fpath, type=None):
     return pd.DataFrame({exp_idx: index, exp_val: values, exp_err: errors})
 
 
+def parse_bc_errors(fpath):
+    """
+    Parse a text file containing customized errors for back-calculators.
+    
+    FORMATTING:
+    In a .TXT file where the first column is the name of the module
+    the second column will be the custom error.
+    
+    For example:
+    pre 0.003
+    noe 0.0023
+    fret 0.004
+    cs {'C':1.2,'CA':0.84,'CB':1.11,'H':0.56,'HA':0.10}
+    """
+    custom_bc_errors = default_bc_errors
+    
+    with open(fpath, mode='r') as f:
+        lines = f.readlines()
+        for line in lines:
+            splitted = line.split()
+            try:
+                custom_bc_errors[splitted[0]] = float(splitted[1])
+            except ValueError:
+                dictconv = ast.literal_eval(splitted[1])
+                custom_bc_errors[splitted[0]] = dictconv
+    
+    return custom_bc_errors
+    
+
 def parse_data(filenames, mode, bc_errors={}):
     """
     Main function to read/parse all experimental and back-calculated files.
@@ -244,14 +277,17 @@ def parse_data(filenames, mode, bc_errors={}):
     # Parse experimental data
     if mode == parse_mode_exp:
         for module in filenames:
+            # Try to parse NMRStar first
+            # otherwise parse CUSTOM formatting
             try:
                 if module == saxs_name:
                     data = parse_saxs_data(filenames[module])
                 elif module == cs_name:
                     data = parse_cs_data(filenames[module])
                 elif module == fret_name:
-                    # do fret parsing
-                    None
+                    parsed[module] = \
+                        Stack(module, pd.read_csv(filenames[module], delimiter=','), 0.02, None)
+                    continue
                 elif module == jc_name:
                     data = parse_nmrstar_data(filenames[module])
                 elif module == noe_name:
@@ -261,7 +297,9 @@ def parse_data(filenames, mode, bc_errors={}):
                 elif module == rdc_name:
                     data = parse_nmrstar_data(filenames[module])
                 elif module == rh_name:
-                    data = pd.read_csv(filenames[module], delimiter=',')
+                    parsed[module] = \
+                        Stack(module, pd.read_csv(filenames[module], delimiter=','), 0.3, None)
+                    continue
             except TypeError:
                 data = pd.read_csv(filenames[module], delimiter=',')
                      
