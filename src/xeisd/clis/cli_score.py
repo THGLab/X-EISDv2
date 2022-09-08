@@ -30,6 +30,7 @@ OUTPUT:
 """
 import argparse
 import os
+from select import select
 import shutil
 from functools import partial
 
@@ -43,9 +44,9 @@ from xeisd.components import (
     parse_mode_back,
     meta_data,
     )
-from xeisd.components.parser import parse_bc_errors
+from xeisd.components.parser import parse_data, parse_bc_errors
 from xeisd.components.optimizer import XEISD
-from xeisd.components.parser import parse_data
+from xeisd.components.helper import selective_calculator
 
 from idpconfgen.libs.libstructure import Structure
 from idpconfgen.libs.libio import extract_from_tar, read_path_bundle
@@ -158,7 +159,7 @@ def main(
     log.info(S('done'))
 
     log.info(T('Parsing experimental and back-calculated files'))
-    exp_paths, _parse_errs = parse_data(filenames[parse_mode_exp], mode=parse_mode_exp)
+    exp_data, _parse_errs = parse_data(filenames[parse_mode_exp], mode=parse_mode_exp)
     if _parse_errs:
         for e in _meta_errs:
             log.info(S(e))
@@ -173,15 +174,14 @@ def main(
     # - back_paths will point to files within tmpdir, or another directory
     # this way, we can save on the parsing steps
     if tobc:
-        for module in tobc:
-            
+        new_back_data = selective_calculator(pdbs2operate, tobc)
     if filenames[parse_mode_back] != {}:
-        existing_back_paths, _parse_errs = \
+        existing_back_data, _parse_errs = \
             parse_data(filenames[parse_mode_back], parse_mode_back, bc_errors)
     
-    back_paths = existing_back_paths
+    back_data = existing_back_data + new_back_data
 
-    eisd_ens = XEISD(exp_paths, back_paths, ens_size, nres)
+    eisd_ens = XEISD(exp_data, back_data, ens_size, nres)
     log.info(T(f'Starting X-EISD Scoring'))
     execute = partial (
         report_on_crash,
