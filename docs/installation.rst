@@ -128,6 +128,10 @@ Installing SPyCi-PDB
     
     if you're using ``virtualenv``, remain in the environment.
 
+.. important::
+    * IDPConformerGenerator is required to be installed again within SPyCi-PDB as that is a requirement.
+    * Replace any instances of updating a ``spycipdb`` environment with ``xeisd`` in the installation of SPyCi-PDB.
+
 Clone from the official repository::
 
     git clone https://github.com/julie-forman-kay-lab/SPyCi-PDB
