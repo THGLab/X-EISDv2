@@ -154,7 +154,7 @@ def add_argument_data_files(parser):
     parser : `argparse.ArgumentParser` object
     """
     parser.add_argument(
-        '-f',
+        '-df',
         '--data-files',
         help=(
             'Path to the folder containing experimental '
@@ -189,7 +189,7 @@ def add_argument_epochs(parser):
 def add_argument_pdb_files(parser):
     """
     Add PDBs Files entry to argument parser.
-    
+
     Parameters
     ----------
     parser : `argparse.ArgumentParser` object
@@ -201,8 +201,7 @@ def add_argument_pdb_files(parser):
             'Paths to PDB files in the disk. '
             'Accepts a TAR file.'
             ),
-        type=str,
-        default=None,
+        nargs='+',
         action=FolderOrTar,
         )
 

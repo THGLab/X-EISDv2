@@ -138,12 +138,12 @@ def meta_data(fpath):
     
     all_files = [f for f in os.listdir(fpath) if os.path.isfile(os.path.join(fpath, f))]  # noqa: E501
     for f in all_files:
-        if f.startswith('exp_'):
+        if f.startswith(parse_mode_exp):
             if f.endswith(eisd_modules):
                 exp_paths.append(os.path.join(fpath, f))
                 _ext = f[f.rindex('.') + 1:]
                 valid_exp_modules.append(f'.{_ext}')
-        elif f.startswith('back_'):
+        elif f.startswith(parse_mode_back):
             if f.endswith(eisd_modules):
                 back_paths.append(os.path.join(fpath, f))
                 _ext = f[f.rindex('.') + 1:]

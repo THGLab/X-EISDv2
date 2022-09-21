@@ -6,7 +6,7 @@ Initial creation made with integrated SPyCi-PDB calculators in mind.
 """
 from spycipdb.components.helpers import *
 
-def selective_calculator(pdbfilepaths, modules):
+def selective_calculator(pdbfilepaths, modules, ncores):
     """
     Back-calculate experimental data with no pre-existing back-calculations.
     

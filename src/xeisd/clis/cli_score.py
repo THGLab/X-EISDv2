@@ -6,7 +6,7 @@ back-calculated files, X-EISD will attempt to parse the back-calculated
 files first and if they're not in the right format, we will back-calculate
 the information for you using SPyCi-PDB.
 
-For `--exp-files`, please name all your experimental files
+For `--data-files`, please name all your experimental files
 ending with the extension(s) corresponding to the experiment
 of interest and starting with `exp_`.
     
@@ -22,15 +22,13 @@ The internal formatting can be .JSON however.
     bc_*.saxs, bc_*.cs, bc_*.fret, etc.
 
 USAGE:
-    $ xeisd score [--exp-files] [--back-files] [--epochs]
-    $ xeisd score [--exp-files] [--pdb-structures] [--epochs] [--output] [--ncores]
+    $ xeisd score [--data-files] [--epochs]
+    $ xeisd score [--data-files] [--pdb-structures] [--epochs] [--output] [--ncores]
 
 OUTPUT:
 
 """
 import argparse
-import os
-from select import select
 import shutil
 from functools import partial
 
@@ -100,16 +98,12 @@ def main(
 
     Parameters
     ----------
-    exp_files : str or Path, required
-        Path to the folder containing experimental
+    data_files : str or Path, required
+        Path to the folder containing experimental and back-calc
         data files.
         
     pdb_files : str or Path, optional
         Path to PDB files on the disk. Accepts TAR file.
-        
-    back_files : str or Path, optional
-        Path to the folder containing experimental
-        data files.
     
     custom_error : str or Path, optional
         Path to the file containing custom back-calculator errors.
@@ -127,17 +121,21 @@ def main(
     """
     init_files(log, LOGFILESNAME)
     
-    #if pdb_files == None and back_files == None:
-    #    log.info(S('WARNING: you must provide either PDB files or back-calculated files.'))
-    #    return
+    # Sets back-calculator errors
+    if custom_error:
+        bc_errors = parse_bc_errors(custom_error)
+    else:
+        bc_errors = default_bc_errors
+        
     
-    log.info(T('Reading conformer ensemble paths'))
+    # Processes PDB files if given
     _istarfile = False
     if pdb_files:
+        log.info(T('Reading conformer ensemble paths'))
         try:
             pdbs2operate = extract_from_tar(pdb_files, output=tmpdir, ext='.pdb')
             _istarfile = True
-        except (OSError, FileNotFoundError, TypeError):
+        except (OSError, TypeError):
             pdbs2operate = list(read_path_bundle(pdb_files, ext='pdb'))
             _istarfile = False
         log.info(S('done'))
@@ -148,6 +146,8 @@ def main(
         s.build()
         nres = len(s.residues)
     
+    
+    # Check to see experimental and back-calc files match
     log.info(T('Checking experimental and back-calculation data files'))
     filenames, tobc, _meta_errs = meta_data(data_files)
     if _meta_errs:
@@ -158,29 +158,38 @@ def main(
             return
     log.info(S('done'))
 
+
+    # Parse experimental and given back-calculated files
     log.info(T('Parsing experimental and back-calculated files'))
-    exp_data, _parse_errs = parse_data(filenames[parse_mode_exp], mode=parse_mode_exp)
+    exp_data, _parse_errs = parse_data(
+        filenames[parse_mode_exp],
+        mode=parse_mode_exp
+    )
     if _parse_errs:
-        for e in _meta_errs:
+        for e in _parse_errs:
             log.info(S(e))
+    if filenames[parse_mode_back]:
+        back_data, _parse_errs = parse_data(
+            filenames[parse_mode_back],
+            parse_mode_back,
+            bc_errors,
+        )
+        if _parse_errs:
+            for e in _parse_errs:
+                log.info(S(e))
+    log.info(S('done'))
     
-    if custom_error:
-        bc_errors = parse_bc_errors(custom_error)
-    else:
-        bc_errors = default_bc_errors
     
     #TODO: perform back-calculation via SPyCi-PDB
-    # - make temporary files with the back-calculations to be removed later in tmpdir
-    # - back_paths will point to files within tmpdir, or another directory
-    # this way, we can save on the parsing steps
     if tobc:
-        new_back_data = selective_calculator(pdbs2operate, tobc)
-    if filenames[parse_mode_back] != {}:
-        existing_back_data, _parse_errs = \
-            parse_data(filenames[parse_mode_back], parse_mode_back, bc_errors)
+        try:
+            new_back_data = selective_calculator(pdbs2operate, tobc, ncores)
+            back_data = back_data + new_back_data
+        except UnboundLocalError:
+            log.info(S('You must provide an ensemble of PDBs to perform back-calculations.'))
+            return
     
-    back_data = existing_back_data + new_back_data
-
+    # TODO: check if missing `ens_size` and `nres` is handled in `XEISD`
     eisd_ens = XEISD(exp_data, back_data, ens_size, nres)
     log.info(T(f'Starting X-EISD Scoring'))
     execute = partial (
@@ -196,8 +205,6 @@ def main(
     
     if _istarfile:
         shutil.rmtree(tmpdir)
-        
-    log.info(S('done'))
     
     return
 
