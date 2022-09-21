@@ -37,11 +37,13 @@ class XEISD(object):
     Parameters
     ----------
     exp_data : dict
-        Experimental data files with uncertainties.
+        Experimental data Stack
     bc_data : dict
-        Back calculation files with uncertainties.
+        Back calculation data Stack
+    nres : int
+        Number of residues per conformer
     ens_size : int
-        number of candidate conformers.
+        Number of candidate conformers.
     """
     def __init__(self, exp_data, bc_data, nres, ens_size=None):
         self.exp_data = exp_data
@@ -49,8 +51,10 @@ class XEISD(object):
         self.resnum = nres
         self.ens_size = ens_size
         if ens_size is None:
-            # If pool size not provided. Use the JC back-calc size
-            self.ens_size = bc_data[jc_name].data.shape[0]
+            # If pool size not provided. Use the length
+            # of the first back-calc dataset
+            # TODO double check this
+            self.ens_size = len(bc_data[0])
 
 
     def calc_scores(self, dtypes, ens_size, indices=None):

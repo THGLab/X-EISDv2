@@ -252,6 +252,7 @@ def fret_optimization_ensemble(
     exp = exp_data[fret_name].data
     exp_sigma = exp_data[fret_name].sigma
 
+    # NOTE: watch out for 2D dataframe here
     if indices is None:
         bc = old_vals - \
             (bc_data[fret_name].data.values[popped_structure, :] - \
