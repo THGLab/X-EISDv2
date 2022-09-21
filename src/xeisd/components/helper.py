@@ -4,7 +4,7 @@ third-party programs.
 
 Initial creation made with integrated SPyCi-PDB calculators in mind.
 """
-from spycipdb.components.calculators import *
+from spycipdb.components.helpers import *
 
 def selective_calculator(pdbfilepaths, modules):
     """

@@ -81,7 +81,7 @@ Installing IDPConformerGenerator
 --------------------------------
 
 .. note::
-    You should already be inside the ``X-EISDv2`` directory.
+    You should be in the directory where ``X-EISDv2`` was cloned to.
     The ``xeisd`` conda environment should not be active. Deactivate using::
         
         conda deactivate
@@ -112,6 +112,7 @@ virtualenv was used to install X-EISDv2::
 Go back to the ``X-EISDv2`` directory and reinstall ``xeisd``::
 
     cd ..
+    cd X-EISDv2
     python setup.py develop --no-deps
 
 
@@ -122,6 +123,7 @@ Installing SPyCi-PDB
     Please visit the SPyCi-PDB repository for more detailed installation instructions.
     Below highlights only the base installation of SPyCi-PDB.
 
+    You should be in the directory where ``X-EISDv2`` was cloned to.
     The ``xeisd`` conda environment should not be active. Deactivate using::
         
         conda deactivate
@@ -129,8 +131,7 @@ Installing SPyCi-PDB
     if you're using ``virtualenv``, remain in the environment.
 
 .. important::
-    * IDPConformerGenerator is required to be installed again within SPyCi-PDB as that is a requirement.
-    * Replace any instances of updating a ``spycipdb`` environment with ``xeisd`` in the installation of SPyCi-PDB.
+    Replace any instances of updating a ``spycipdb`` environment with ``xeisd`` in the installation of SPyCi-PDB.
 
 Clone from the official repository::
 
@@ -156,4 +157,5 @@ virtualenv was used to install SPyCi-PDB::
 Go back to the ``X-EISDv2`` directory and reinstall ``xeisd``::
 
     cd ..
+    cd X-EISDv2
     python setup.py develop --no-deps
