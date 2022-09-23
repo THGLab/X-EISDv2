@@ -28,8 +28,8 @@ USAGE:
 OUTPUT:
 
 """
+import json
 import argparse
-from audioop import avg
 import shutil
 from functools import partial
 
@@ -93,9 +93,9 @@ def main(
         data_files,
         nconfs,
         nres,
+        output,
         custom_error=None,
         pdb_files=None,
-        output=None,
         ncores=1,
         tmpdir=TMPDIR,
         func=None,
@@ -211,14 +211,20 @@ def main(
         _output[result[0]] = {
             "rmse": result[1][rmse_idx],
             "score": result[1][score_idx],
-            "avg_bc_value": result[1][avg_bc_idx],
+            "avg_bc_value": result[1][avg_bc_idx].tolist(),
         }
+    log.info(S('done'))
+    
+    log.info(T('Writing output onto disk'))
+    with open(output, mode='w') as fout:
+        fout.write(json.dumps(_output, indent=4))
     log.info(S('done'))
     
     std_out = XEISD_TITLE + "\n\n"
     for module in _output:
-        std_out += f"{module.upper()} RMSE = {_output[module]['rmse']}\n"
         std_out += f"{module.upper()} Score = {_output[module]['score']}\n"
+        std_out += f"{module.upper()} RMSE  = {_output[module]['rmse']}\n"
+        std_out += "---\n"
     
     log.info(S(std_out))
     

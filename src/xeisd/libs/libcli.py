@@ -230,11 +230,13 @@ def add_argument_output(parser):
         '-o',
         '--output',
         help=(
-            'Output file. Defaults to `None`. '
-            'Read CLI instructions for `None` behaviour.'
+            'Output back-calculated information into'
+            ' a .JSON readabale file.'
+            'Formatting may vary across modules.'
+            'Defaults to `output.json`.'
             ),
         type=str,
-        default=None,
+        default='output.json',
         )
 
 

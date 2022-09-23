@@ -1,13 +1,18 @@
 X-EISDv2
 ========
+.. image:: https://github.com/THGLab/X-EISDv2/blob/main/docs/xeisd_ascii.png
 
-Extended Experimental Inferential Structure Determination version 2
+.. start-description
+
+**Extended Experimental Inferential Structure Determination version 2**
 
 **Goal:** a generalized and modular version of X-EISD; developed with integration into the IDPConformerGenerator
 platform in mind.
 
 **Developer Notes:** project CI based on `@joaomcteixeira <https://github.com/joaomcteixeira>`_'s `Python-Project-Skeleton template <https://github.com/joaomcteixeira/python-project-skeleton>`_.
 Developed as a standalone program with integration into the IDPConformerGenerator platform in mind.
+
+.. end-description
 
 Documentation
 =============

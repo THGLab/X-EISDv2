@@ -7,6 +7,7 @@ Changelog
 * Installation of IDPConformerGenerator on top of X-EISDv2
 * Update README
 * Installation of SPyCi-PDB on top of X-EISDv2
+* ASCII art
 
 v0.0.3 (2022-08-30)
 ------------------------------------------------------------
