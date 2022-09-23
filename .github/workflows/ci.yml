@@ -12,7 +12,8 @@ jobs:
     strategy:
       # fail-fast: false
       matrix:
-        platform: [ubuntu-latest, macos-latest]
+        # TODO: add `macos-latest` later
+        platform: [ubuntu-latest]
         python-version: [3.8, 3.9, '3.10']
         # you can separate the tox-envs in different .yml files
         # see version 0.10.1
