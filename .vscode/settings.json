@@ -1,3 +1,7 @@
 {
-    "esbonio.sphinx.confDir": ""
+    "esbonio.sphinx.confDir": "",
+    "python.analysis.extraPaths": [
+        "../IDPConformerGenerator/src",
+        "../SPyCi-PDB/src"
+    ]
 }

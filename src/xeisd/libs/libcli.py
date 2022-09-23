@@ -145,15 +145,58 @@ def add_version(parser):
         )
 
 
-def add_argument_pdb_files(parser):
+def add_argument_data_files(parser):
     """
-    Add PDBs Files entry to argument parser.
+    Add experimental files entry to argument parser.
+    
     Parameters
     ----------
     parser : `argparse.ArgumentParser` object
     """
     parser.add_argument(
-        'pdb_files',
+        '-df',
+        '--data-files',
+        help=(
+            'Path to the folder containing experimental '
+            'and back-calculated data.'
+            ),
+        type=str,
+        required=True,
+        default=None,
+        )
+
+
+def add_argument_epochs(parser):
+    """
+    Add number of epochs to argument parser.
+    
+    Parameters
+    ----------
+    parser : `argparse.ArgumentParser` object
+    """
+    parser.add_argument(
+        '-eps',
+        '--epochs',
+        help=(
+            'Number of times to run main optimization,'
+            ' recommended at least the size of your'
+            ' ensemble.'          
+            ),
+    type=int,
+    required=True,
+    )
+
+def add_argument_pdb_files(parser):
+    """
+    Add PDBs Files entry to argument parser.
+
+    Parameters
+    ----------
+    parser : `argparse.ArgumentParser` object
+    """
+    parser.add_argument(
+        '-pdbs',
+        '--pdb-files',
         help=(
             'Paths to PDB files in the disk. '
             'Accepts a TAR file.'
@@ -187,9 +230,49 @@ def add_argument_output(parser):
         '-o',
         '--output',
         help=(
-            'Output file. Defaults to `None`. '
-            'Read CLI instructions for `None` behaviour.'
+            'Output back-calculated information into'
+            ' a .JSON readabale file.'
+            'Formatting may vary across modules.'
+            'Defaults to `output.json`.'
             ),
         type=str,
-        default=None,
+        default='output.json',
         )
+
+
+def add_argument_custom_bc_error(parser):
+    """Add argument for custom back-calculator error file."""
+    parser.add_argument(
+        '-ce',
+        '--custom-error',
+        help=(
+            'Path to file for custom back-calculator errors. '
+            'First column should be module name, second column should be '
+            'error of interest. Do not add whitespace other than to '
+            'separate columns.'
+            ),
+        type=str,
+        default=None
+    )
+
+
+def add_argument_number_conformers(parser):
+    """Add argument for number of conformers in ensemble"""
+    parser.add_argument(
+        '-nc',
+        '--nconfs',
+        help='Number of conformers in ensemble.',
+        type=int,
+        required=True,
+    )
+
+
+def add_argument_number_residues(parser):
+    """Add argument for number of residues in protein"""
+    parser.add_argument(
+        '-nr',
+        '--nres',
+        help='Number of residues in protein.',
+        type=int,
+        required=True,
+    )

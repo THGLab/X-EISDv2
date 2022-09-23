@@ -5,6 +5,10 @@ Installation
 X-EISDv2 uses only Python-based APIs for which we expect it to run
 native on any system Python can run.
 
+Please note that the IDPConformerGenerator library is required for 
+multiprocessing logic and parsing PDB files. Details for IDPConformerGenerator
+can be found `here <https://github.com/julie-forman-kay-lab/IDPConformerGenerator>`_.
+
 Please note that SPyCi-PDB is required to automate and perform back-calculations
 if you do not provide back-calculated data to compare with experimental data for your
 conformational ensembles. Details for SPyCi-PDB
@@ -73,6 +77,45 @@ To update to the latest version, navigate to the repository folder, activate the
 Your installation will become up to date with the latest developments.
 
 
+Installing IDPConformerGenerator
+--------------------------------
+
+.. note::
+    You should be in the directory where ``X-EISDv2`` was cloned to.
+    The ``xeisd`` conda environment should not be active. Deactivate using::
+        
+        conda deactivate
+    
+    if you're using ``virtualenv``, remain in the environment.
+
+Clone from the official repository::
+
+    git clone https://github.com/julie-forman-kay-lab/IDPConformerGenerator
+
+Navigate to the new ``IDPConformerGenerator`` folder::
+
+    cd IDPConformerGenerator
+
+Run the following commands to install ``idpconfgen`` dependencies if
+Anaconda is used as your Python package manager::
+
+    conda env update --name xeisd --file requirements.yml --prune
+    conda activate xeisd
+    python setup.py develop --no-deps
+    
+Run the following commands to install ``idpconfgen`` dependencies if
+virtualenv was used to install X-EISDv2::
+
+    pip install -r requirements.txt
+    python setup.py develop --no-deps
+
+Go back to the ``X-EISDv2`` directory and reinstall ``xeisd``::
+
+    cd ..
+    cd X-EISDv2
+    python setup.py develop --no-deps
+
+
 Installing SPyCi-PDB
 --------------------
 
@@ -80,11 +123,15 @@ Installing SPyCi-PDB
     Please visit the SPyCi-PDB repository for more detailed installation instructions.
     Below highlights only the base installation of SPyCi-PDB.
 
+    You should be in the directory where ``X-EISDv2`` was cloned to.
     The ``xeisd`` conda environment should not be active. Deactivate using::
         
         conda deactivate
     
     if you're using ``virtualenv``, remain in the environment.
+
+.. important::
+    Replace any instances of updating a ``spycipdb`` environment with ``xeisd`` in the installation of SPyCi-PDB.
 
 Clone from the official repository::
 
@@ -110,4 +157,5 @@ virtualenv was used to install SPyCi-PDB::
 Go back to the ``X-EISDv2`` directory and reinstall ``xeisd``::
 
     cd ..
+    cd X-EISDv2
     python setup.py develop --no-deps
