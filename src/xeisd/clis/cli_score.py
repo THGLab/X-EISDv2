@@ -187,12 +187,17 @@ def main(
             for e in _parse_errs:
                 log.info(S(str(e)))
     log.info(S('done'))    
-    
-    #TODO: perform back-calculation via SPyCi-PDB
+
     if tobc:
         try:
-            new_back_data = selective_calculator(pdbs2operate, tobc, ncores)
-            back_data = back_data + new_back_data
+            new_back_data = selective_calculator(
+                pdbs2operate,
+                filenames[parse_mode_exp],
+                tobc,
+                bc_errors,
+                ncores,
+            )
+            back_data = {**back_data, **new_back_data}
         except UnboundLocalError:
             log.info(S('You must provide an ensemble of PDBs to perform back-calculations.'))
             return
