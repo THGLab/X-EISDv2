@@ -313,7 +313,7 @@ def parse_data(filenames, mode, bc_errors=default_bc_errors):
             try:
                 lists = []
                 with open(filenames[module], 'r') as f:
-                    raw = json.loads(f)
+                    raw = json.loads(f.read())
                     raw.pop('format', None)
                     # For each module, the data will be a list of lists
                     # think each column is a conformer and each row is

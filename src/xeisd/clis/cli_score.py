@@ -29,6 +29,7 @@ OUTPUT:
 
 """
 import argparse
+from audioop import avg
 import shutil
 from functools import partial
 
@@ -40,6 +41,10 @@ from xeisd.components import (
     default_bc_errors,
     parse_mode_exp,
     parse_mode_back,
+    rmse_idx,
+    score_idx,
+    avg_bc_idx,
+    XEISD_TITLE,
     meta_data,
     )
 from xeisd.components.parser import parse_data, parse_bc_errors
@@ -67,8 +72,9 @@ ap = libcli.CustomParser(
 
 libcli.add_argument_data_files(ap)
 libcli.add_argument_pdb_files(ap)
+libcli.add_argument_number_conformers(ap)
+libcli.add_argument_number_residues(ap)
 libcli.add_argument_custom_bc_error(ap)
-libcli.add_argument_epochs(ap)
 libcli.add_argument_output(ap)
 libcli.add_argument_ncores(ap)
 
@@ -85,7 +91,8 @@ ap.add_argument(
 
 def main(
         data_files,
-        epochs,
+        nconfs,
+        nres,
         custom_error=None,
         pdb_files=None,
         output=None,
@@ -101,19 +108,21 @@ def main(
     data_files : str or Path, required
         Path to the folder containing experimental and back-calc
         data files.
-        
+    
+    nconfs : int, required
+        Number of conformations in ensemble.
+    
+    nres : int required
+        Number of residues in protein.
+    
     pdb_files : str or Path, optional
         Path to PDB files on the disk. Accepts TAR file.
     
     custom_error : str or Path, optional
         Path to the file containing custom back-calculator errors.
     
-    epochs : int, required
-        Number of times to run main optimization.
-    
     output : str or Path, optional
         Path to the folder to store eisd outputs.
-        Defaults to working directory.
         
     ncores : int, optional
         Number of workers to use for multiprocessing.
@@ -152,7 +161,7 @@ def main(
     filenames, tobc, _meta_errs = meta_data(data_files)
     if _meta_errs:
         for e in _meta_errs:
-            log.info(S(e))
+            log.info(S(str(e)))
         if filenames == {}:
             log.info(S('done'))
             return
@@ -167,7 +176,7 @@ def main(
     )
     if _parse_errs:
         for e in _parse_errs:
-            log.info(S(e))
+            log.info(S(str(e)))
     if filenames[parse_mode_back]:
         back_data, _parse_errs = parse_data(
             filenames[parse_mode_back],
@@ -176,9 +185,8 @@ def main(
         )
         if _parse_errs:
             for e in _parse_errs:
-                log.info(S(e))
-    log.info(S('done'))
-    
+                log.info(S(str(e)))
+    log.info(S('done'))    
     
     #TODO: perform back-calculation via SPyCi-PDB
     if tobc:
@@ -189,19 +197,30 @@ def main(
             log.info(S('You must provide an ensemble of PDBs to perform back-calculations.'))
             return
     
-    # TODO: check if missing `ens_size` and `nres` is handled in `XEISD`
-    eisd_ens = XEISD(exp_data, back_data, ens_size, nres)
-    log.info(T(f'Starting X-EISD Scoring'))
+    dtypes = [module for module in exp_data]
+    eisd_ens = XEISD(exp_data, back_data, nres, nconfs)
+    log.info(T(f'Starting Scoring Function'))
     execute = partial (
         report_on_crash,
         eisd_ens.calc_scores,
-        epochs=epochs,
-        ens_size=ens_size,        
+        ens_size=nconfs,
         )
-    execute_pool = pool_function(execute, ncores=ncores)
-    #TODO: print output to stdout or save to disk
-    
+    execute_pool = pool_function(execute, dtypes, ncores=ncores)
+    _output = {}
+    for result in execute_pool:
+        _output[result[0]] = {
+            "rmse": result[1][rmse_idx],
+            "score": result[1][score_idx],
+            "avg_bc_value": result[1][avg_bc_idx],
+        }
     log.info(S('done'))
+    
+    std_out = XEISD_TITLE + "\n\n"
+    for module in _output:
+        std_out += f"{module.upper()} RMSE = {_output[module]['rmse']}\n"
+        std_out += f"{module.upper()} Score = {_output[module]['score']}\n"
+    
+    log.info(S(std_out))
     
     if _istarfile:
         shutil.rmtree(tmpdir)

@@ -252,3 +252,25 @@ def add_argument_custom_bc_error(parser):
         type=str,
         default=None
     )
+
+
+def add_argument_number_conformers(parser):
+    """Add argument for number of conformers in ensemble"""
+    parser.add_argument(
+        '-nc',
+        '--nconfs',
+        help='Number of conformers in ensemble.',
+        type=int,
+        required=True,
+    )
+
+
+def add_argument_number_residues(parser):
+    """Add argument for number of residues in protein"""
+    parser.add_argument(
+        '-nr',
+        '--nres',
+        help='Number of residues in protein.',
+        type=int,
+        required=True,
+    )

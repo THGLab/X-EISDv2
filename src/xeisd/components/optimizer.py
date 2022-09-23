@@ -45,16 +45,11 @@ class XEISD(object):
     ens_size : int
         Number of candidate conformers.
     """
-    def __init__(self, exp_data, bc_data, nres, ens_size=None):
+    def __init__(self, exp_data, bc_data, nres, ens_size):
         self.exp_data = exp_data
         self.bc_data = bc_data
         self.resnum = nres
         self.ens_size = ens_size
-        if ens_size is None:
-            # If pool size not provided. Use the length
-            # of the first back-calc dataset
-            # TODO double check this
-            self.ens_size = len(bc_data[0])
 
 
     def calc_scores(self, dtypes, ens_size, indices=None):
@@ -73,43 +68,38 @@ class XEISD(object):
             shape: (size_of_ensemble, )
             Defaults to None.
         
-        Return
-        ----------
-        scores : dict 
-            Dictionary of RMSDs.
-            X-EISD scores and ensemble averages for selected conformers.
+        Returns
+        -------
+        *_name : str
+            Name of module
+        
+        list
+            List of [rmse, score, avg_bc_data]
         '''
         if indices is None:
             indices = np.random.choice(np.arange(self.ens_size), ens_size, replace=False)
-
-        # initiate dict to store scores
-        scores = {}
-            
-        for name in self.exp_data.keys():
-            scores[name] = [0, 0, 0]
-            if name == jc_name:
-                scores[name] = [0, 0, 0, [0]]
         
         # The first 3 items list[:3] is taken as the "rmse", "score", "back-calculation"
         # last "error" return is not used for X-EISD
-        if jc_name in dtypes:
-            scores[jc_name] = list(jc_optimization_ensemble(self.exp_data, self.bc_data, indices))
-        if saxs_name in dtypes:
-            scores[saxs_name] = list(saxs_optimization_ensemble(self.exp_data, self.bc_data, indices, nres=self.resnum))[:3]
-        if cs_name in dtypes:
-            scores[cs_name] = list(cs_optimization_ensemble(self.exp_data, self.bc_data, indices))[:3]
-        if fret_name in dtypes:
-            scores[fret_name] = list(fret_optimization_ensemble(self.exp_data, self.bc_data, indices))[:3]
-        if noe_name in dtypes:
-            scores[noe_name] = list(noe_optimization_ensemble(self.exp_data, self.bc_data, indices))[:3]
-        if pre_name in dtypes:
-            scores[pre_name] = list(pre_optimization_ensemble(self.exp_data, self.bc_data, indices))[:3]
-        if rdc_name in dtypes:
-            scores[rdc_name] = list(rdc_optimization_ensemble(self.exp_data, self.bc_data, indices))[:3]
-        if rh_name in dtypes:
-            scores[rh_name] = list(rh_optimization_ensemble(self.exp_data, self.bc_data, indices))[:3]
-     
-        return scores
+        if jc_name == dtypes:
+            return jc_name, list(jc_optimization_ensemble(self.exp_data, self.bc_data, indices))
+        elif saxs_name == dtypes:
+            return saxs_name, list(saxs_optimization_ensemble(self.exp_data, self.bc_data, indices, nres=self.resnum))[:3]
+        elif cs_name == dtypes:
+            return cs_name, list(cs_optimization_ensemble(self.exp_data, self.bc_data, indices))[:3]
+        elif fret_name == dtypes:
+            return fret_name, list(fret_optimization_ensemble(self.exp_data, self.bc_data, indices))[:3]
+        elif noe_name == dtypes:
+            return noe_name, list(noe_optimization_ensemble(self.exp_data, self.bc_data, indices, ens_size))[:3]
+        elif pre_name == dtypes:
+            return pre_name, list(pre_optimization_ensemble(self.exp_data, self.bc_data, indices, ens_size))[:3]
+        elif rdc_name == dtypes:
+            return rdc_name, list(rdc_optimization_ensemble(self.exp_data, self.bc_data, indices))[:3]
+        elif rh_name == dtypes:
+            return rh_name, list(rh_optimization_ensemble(self.exp_data, self.bc_data, indices))[:3]
+        
+        # code should not go here
+        return False
 
 
     def optimize(

@@ -75,6 +75,18 @@ default_bc_errors = {
     }
 jc_bc_mu = {'A': 6.51, 'B': -1.76, 'C': 1.6}
 
+rmse_idx = 0
+score_idx = 1
+avg_bc_idx = 2
+
+XEISD_TITLE = (
+    "\n _  _     ____  ____  ___  ____  \n"
+    "( \/ )___( ___)(_  _)/ __)(  _ \ \n"
+    " )  ((___))__)  _)(_ \__ \ )(_) )\n"
+    "(_/\_)   (____)(____)(___/(____/ \n"
+    "================================="
+    )
+
 # The following two functions have been imported from:
 # https://github.com/THGLab/X-EISD/blob/master/eisd/utils/miscell.py
 # https://github.com/Oufan75/X-EISD/blob/master/eisd/utils.py
@@ -134,6 +146,7 @@ def meta_data(fpath):
     valid_back_modules = []
     
     meta = {}
+    tobc = None
     errlog = []
     
     all_files = [f for f in os.listdir(fpath) if os.path.isfile(os.path.join(fpath, f))]  # noqa: E501
@@ -182,7 +195,7 @@ def meta_data(fpath):
                 EXP_DATA_FILENAMES[module] = exp
         for bc in back_paths:
             if module in bc:
-                BACK_DATA_FILENAMES[module] = exp
+                BACK_DATA_FILENAMES[module] = bc
 
     meta = {
         parse_mode_exp: EXP_DATA_FILENAMES,
