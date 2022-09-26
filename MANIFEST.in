@@ -2,6 +2,7 @@ graft docs
 graft src
 
 include *.rst
+include *.yml
 include LICENSE
 include requirements.txt
 include CODE_OF_CONDUCT.md

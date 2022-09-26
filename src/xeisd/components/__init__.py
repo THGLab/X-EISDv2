@@ -1,6 +1,5 @@
 """
-Module contains variable definitions and
-miscellaneous utility functions.
+Module contains variable definitions and misc utility functions.
 
 Functions and logic inspired/imported from https://github.com/THGLab/X-EISD/
 """
@@ -80,18 +79,20 @@ score_idx = 1
 avg_bc_idx = 2
 
 XEISD_TITLE = (
-    "\n _  _     ____  ____  ___  ____  \n"
-    "( \/ )___( ___)(_  _)/ __)(  _ \ \n"
-    " )  ((___))__)  _)(_ \__ \ )(_) )\n"
-    "(_/\_)   (____)(____)(___/(____/ \n"
+    "\n _  _     ____  ____  ___  ____  \n"  # noqa: W605
+    "( \/ )___( ___)(_  _)/ __)(  _ \ \n"  # noqa: W605
+    " )  ((___))__)  _)(_ \__ \ )(_) )\n"  # noqa: W605
+    "(_/\_)   (____)(____)(___/(____/ \n"  # noqa: W605
     "================================="
     )
+
 
 # The following two functions have been imported from:
 # https://github.com/THGLab/X-EISD/blob/master/eisd/utils/miscell.py
 # https://github.com/Oufan75/X-EISD/blob/master/eisd/utils.py
 def make_pairs(all):
-    pairs=[]
+    """Make pairs of items in a list."""
+    pairs = []
     for i in range(len(all)):
         for j in range(i + 1, len(all)):
             pairs.append([all[i], all[j]])
@@ -99,12 +100,13 @@ def make_pairs(all):
 
 
 def modes(mode, all):
+    """Initialize a mode from a list."""
     flags = {}
     for prop in all:
         flags[prop] = False
 
     if mode is eisd_run_all:
-        return {flag:True for flag in flags}
+        return {flag: True for flag in flags}
     elif type(mode) is list:
         for flag in mode:
             flags[flag] = True
@@ -119,9 +121,10 @@ def modes(mode, all):
 
 def meta_data(fpath):
     """
-    Function filters through experimental and back-calculated
-    data files to return only the paths that exist in both cases.
+    Filter through exp and bc ata files.
     
+    Return only the paths that exist in both cases.
+
     Automatically removes paths to datafiles if e.g. there are more
     back-calculated data than experimental.
     
@@ -129,7 +132,7 @@ def meta_data(fpath):
     ----------
     fpath : str or Path
         Path to the directory containing both experimental
-        and 
+        and back-calculated data files.
 
     Returns
     -------
@@ -175,10 +178,10 @@ def meta_data(fpath):
     else:
         differences = tuple(set(valid_exp_modules) ^ (set(valid_back_modules)))
         
+        # Do not clear `exp_paths` because we do back-calculations internally
         if differences:
-            # Do not clear `exp_paths` because we can do back-calculations internally
-            #exp_paths = [exp for exp in exp_paths if not exp.endswith(differences)]
-            back_paths = [bck for bck in back_paths if not bck.endswith(differences)]
+            #exp_paths = [exp for exp in exp_paths if not exp.endswith(differences)]  # noqa: E265, E501
+            back_paths = [bck for bck in back_paths if not bck.endswith(differences)]  # noqa: E501
             errlog.append(
                 'Note: found inconsistent experimental and back-calculation'
                 ' data pairs.'

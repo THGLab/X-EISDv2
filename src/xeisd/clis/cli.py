@@ -16,12 +16,10 @@ import argparse
 import sys
 
 from xeisd import __version__, log
-
+from xeisd.clis import cli_score
 from xeisd.libs import libcli
 from xeisd.logger import S
-from xeisd.clis import (
-    cli_score,
-    )
+
 
 _prog, _description, _usageage = libcli.parse_doc_params(__doc__)
 
@@ -44,17 +42,20 @@ libcli.add_version(ap)
 subparsers = ap.add_subparsers(
     title='X-EISD routines',
     help='Short description:',
-)
+    )
 
 libcli.add_subparser(subparsers, cli_score)
+
 
 def load_args():
     """Load user input arguments."""
     return ap.parse_args()
 
+
 def maincli():
     """
     Execute subroutine.
+    
     Arguments are read from user command line input.
     """
     # prints help if not arguments are passed

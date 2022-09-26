@@ -2,6 +2,9 @@
 Changelog
 =========
 
+* Update requirements.txt for tests
+* Lint and passing general tests
+
 v0.0.4 (2022-09-23)
 ------------------------------------------------------------
 

@@ -1,15 +1,16 @@
 """
 X-EISDv2 Exceptions.
+
 Inspired from:
 https://github.com/julie-forman-kay-lab/IDPConformerGenerator/blob/3aef6b085ec09eeebc5812639a5eb6832c0215cd/src/idpconfgen/core/exceptions.py
 """
-from xeisd import log
-from xeisd import count_string_formatters
+from xeisd import count_string_formatters, log
 
 
 class SPyCiPDBException(Exception):
     r"""
     IDPConfGen base exception.
+    
     Parameters
     ----------
     *args
@@ -21,6 +22,7 @@ class SPyCiPDBException(Exception):
         If given, overrides any previous parameter and the ``str``
         value of ``errmsg`` is used as the Exception message.
         Defaults to ``None``.
+        
     Examples
     --------
     Uses the default errormsg.
@@ -34,7 +36,6 @@ class SPyCiPDBException(Exception):
     errmsg = 'An unknnown error as occurred.'
 
     def __init__(self, *args, errmsg=None):
-
         # SPyCiPDBException(errmsg='Custom error msg')
         if errmsg is not None:
             assert isinstance(errmsg, str), f'wrong errmsg type: {type(errmsg)}'
@@ -72,7 +73,9 @@ class SPyCiPDBException(Exception):
     def report(self):
         """
         Report error in the form of a string.
+        
         Identifies Error type and error message.
+        
         Returns
         -------
         str

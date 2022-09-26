@@ -1,44 +1,32 @@
 """
-Contains functions to help X-EISD perform calculations with
-third-party programs.
+Help X-EISD perform calculations with third-party programs.
 
 Initial creation made with integrated SPyCi-PDB calculators in mind.
 """
 from functools import partial
 
+import pandas as pd
+from idpconfgen.libs.libmulticore import pool_function
+from spycipdb.components.helpers import *  # noqa: F403
+from spycipdb.core.calculators import *  # noqa: F403
+
 from xeisd import log
+from xeisd.components import default_bc_errors, noe_name, pre_name
+from xeisd.components.parser import Stack
 from xeisd.logger import S, T, init_files, report_on_crash
 
-from xeisd.components.parser import Stack
-from xeisd.components import (
-    default_bc_errors,
-    saxs_name,
-    cs_name,
-    fret_name,
-    jc_name,
-    noe_name,
-    pre_name,
-    rdc_name,
-    rh_name,
-    )
-
-from spycipdb.core.calculators import *
-from spycipdb.components.helpers import *
-
-from idpconfgen.libs.libmulticore import pool_function
 
 def selective_calculator(
-    pdbfilepaths,
-    exp_fp,
-    modules,
-    bc_errors=default_bc_errors,
-    ncores=1
-    ):
+        pdbfilepaths,
+        exp_fp,
+        modules,
+        bc_errors=default_bc_errors,
+        ncores=1
+        ):
     """
     Back-calculate experimental data with no pre-existing back-calculations.
     
-    Output of SPyCi-PDB is matched to that of `Stack` objects so no additional
-    "parsing" needed.
+    Output of SPyCi-PDB is matched to that of `Stack` objects.
     
     Parameters
     ----------
@@ -66,7 +54,7 @@ def selective_calculator(
     new_bc = {}
     
     init_files(log, ".xeisd_bc")
-    log.info(T(f"Starting back-calculation of necessary modules using {ncores} workers"))
+    log.info(T(f"Starting back-calculation of necessary modules using {ncores} workers"))  # noqa: E501
     
     for exp in modules:
         log.info(S(f"back-calculating {exp} datatypes..."))
@@ -74,15 +62,15 @@ def selective_calculator(
         if exp == noe_name:
             execute = partial(
                 report_on_crash,
-                calc_noe,
+                calc_noe,  # noqa: F405
                 exp_fp[noe_name],
-            )
+                )
         elif exp == pre_name:
             execute = partial(
                 report_on_crash,
-                calc_pre,
+                calc_pre,  # noqa: F405
                 exp_fp[pre_name],
-            )
+                )
         # add more `elif` statements as we test more modules
         
         execute_pool = pool_function(execute, pdbfilepaths, ncores=ncores)
