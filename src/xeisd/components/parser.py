@@ -1,9 +1,10 @@
 """
 Main logic for parsing experimental and back-calculated raw outputs.
+
 Accepts primarily NMR-STAR formatted files for solution data.
 
 USAGE EXAMPLE:
-    For NMR-STAR files, it must be the data between the `loop_` and 
+    For NMR-STAR files, it must be the data between the `loop_` and
     `stop_` codes without new lines. The easiest way is to just
     copy the block of data from NMR-STAR file from the BMRB
     to a new text file.
@@ -50,7 +51,7 @@ CUSTOM format:
     formatting is delineated by comma (,) and the first line dictates
     what each column represents (i.e. pandas DataFrame format).
     
-    Examples for each data-type has been provided in the ``/exp_examples`` folder.
+    Examples for each data-type has been provided in ``/exp_examples``.
     
     SAXS: index,value,error
     CS: index,resnum,atomname,value,error
@@ -94,10 +95,11 @@ from xeisd.components import (
 
 
 class Stack():
+    """Custom stack object for conformers and values."""
+    
     def __init__(self, name, data, sigma=None, mu=None):
         """
-        Initialize stack of experimental or back-calculated
-        data.
+        Initialize stack of experimental or back-calculated data.
 
         Parameters
         ----------
@@ -114,6 +116,7 @@ class Stack():
 
 
 def parse_saxs_data(fpath):
+    """Parse NMR STAR format for SAXS data."""
     index = []
     value = []
     error = []
@@ -135,6 +138,7 @@ def parse_saxs_data(fpath):
 
 
 def parse_cs_data(fpath):
+    """Parse NMR STAR format for CS data."""
     index = []
     atoms = []
     values = []
@@ -149,9 +153,9 @@ def parse_cs_data(fpath):
         for i, line in enumerate(lines):
             if "_" in line:
                 dtype = line.split(".")[1].strip()
-                if dtype == "Val": data_idx = i
-                elif dtype == "Val_err": error_idx = i
-                elif dtype == "Atom_ID": atom_idx = i
+                if dtype == "Val": data_idx = i  # noqa: E701
+                elif dtype == "Val_err": error_idx = i  # noqa: E701
+                elif dtype == "Atom_ID": atom_idx = i  # noqa: E701
             else:
                 start_idx = i
                 break
@@ -166,11 +170,11 @@ def parse_cs_data(fpath):
             errors.append(float(splitted[error_idx]))
             idx += 1
             
-    return pd.DataFrame({exp_idx: index, exp_atmID: atoms, exp_val: values, exp_err: errors})
+    return pd.DataFrame({exp_idx: index, exp_atmID: atoms, exp_val: values, exp_err: errors})  # noqa: E501
 
 
-# Good for NMR-STAR formatted JC, RDC, NOE, PRE
 def parse_nmrstar_data(fpath, type=None):
+    """Parse NMR STAR format for JC, RDC, NOE, PRE data."""
     index = []
     values = []
     upper = []
@@ -186,16 +190,16 @@ def parse_nmrstar_data(fpath, type=None):
         for i, line in enumerate(lines):
             if "_" in line:
                 dtype = line.split(".")[1].strip()
-                if dtype == "Val": data_idx = i
-                elif dtype == "Val_err": error_idx = i
-                if type == noe_name or type == pre_name:
-                    if dtype == "Val_max": max_idx = i
-                    elif dtype == "Val_min": min_idx = i
+                if dtype == "Val": data_idx = i  # noqa: E701
+                elif dtype == "Val_err": error_idx = i  # noqa: E701
+                if type == noe_name or type == pre_name:  # noqa: E701
+                    if dtype == "Val_max": max_idx = i  # noqa: E701
+                    elif dtype == "Val_min": min_idx = i  # noqa: E701
             else:
                 start_idx = i
                 break
         
-        idx=1
+        idx = 1
         for idx in range(start_idx, len(lines)):
             splitted = lines[idx].split()
             
@@ -207,14 +211,13 @@ def parse_nmrstar_data(fpath, type=None):
             if type == noe_name or type == pre_name:
                 max = splitted[max_idx]
                 min = splitted[min_idx]
-                if max == ".": max = 0.0
-                if min == ".": min = 0.0
+                if max == ".": max = 0.0  # noqa: E701
+                if min == ".": min = 0.0  # noqa: E701
                 upper.append(float(max))
                 lower.append(float(min))
     
     if type == noe_name or type == pre_name:
-        return pd.DataFrame({exp_idx: index, exp_val: values, exp_max: upper, exp_min: lower, exp_err: errors})
-    
+        return pd.DataFrame({exp_idx: index, exp_val: values, exp_max: upper, exp_min: lower, exp_err: errors})  # noqa: E501
     return pd.DataFrame({exp_idx: index, exp_val: values, exp_err: errors})
 
 
@@ -249,7 +252,7 @@ def parse_bc_errors(fpath):
 
 def parse_data(filenames, mode, bc_errors=default_bc_errors):
     """
-    Main function to read/parse all experimental and back-calculated files.
+    Parse all experimental and back-calculated files.
 
     Parameters
     ----------
@@ -269,7 +272,7 @@ def parse_data(filenames, mode, bc_errors=default_bc_errors):
         Dictionary of properties with their pandas dataframe.
     
     errlogs : list
-        List of possible messages to display for the user.    
+        List of possible messages to display for the user.
     """
     parsed = {}
     errlogs = []
@@ -287,7 +290,7 @@ def parse_data(filenames, mode, bc_errors=default_bc_errors):
                     data = parse_cs_data(filenames[module])
                 elif module == fret_name:
                     parsed[module] = \
-                        Stack(module, pd.read_csv(filenames[module], delimiter=','), 0.02, None)
+                        Stack(module, pd.read_csv(filenames[module], delimiter=','), 0.02, None)  # noqa: E501
                     continue
                 elif module == jc_name:
                     data = parse_nmrstar_data(filenames[module])
@@ -299,7 +302,7 @@ def parse_data(filenames, mode, bc_errors=default_bc_errors):
                     data = parse_nmrstar_data(filenames[module])
                 elif module == rh_name:
                     parsed[module] = \
-                        Stack(module, pd.read_csv(filenames[module], delimiter=','), 0.3, None)
+                        Stack(module, pd.read_csv(filenames[module], delimiter=','), 0.3, None)  # noqa: E501
                     continue
             except TypeError:
                 data = pd.read_csv(filenames[module], delimiter=',')
