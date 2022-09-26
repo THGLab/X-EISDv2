@@ -1,5 +1,6 @@
 """
 Operations shared by client interfaces.
+
 Inspired fromIDPConformerGenerator:
 https://github.com/julie-forman-kay-lab/IDPConformerGenerator/blob/3aef6b085ec09eeebc5812639a5eb6832c0215cd/src/idpconfgen/libs/libcli.py
 """
@@ -25,11 +26,10 @@ def maincli(ap, main):
 
 
 class FolderOrTar(argparse.Action):
-    """Checks if input is a folder, files, or tarball."""
-
+    """Check if input is a folder, files, or tarball."""
 
     def __call__(self, parser, namespace, values, option_string=None):
-        """Checks the extension of input."""
+        """Check the extension of input."""
         if values[0].endswith('.tar'):
             setattr(namespace, self.dest, values[0])
         else:
@@ -39,7 +39,6 @@ class FolderOrTar(argparse.Action):
 class ArgsToTuple(argparse.Action):
     """Convert list of arguments in tuple."""
 
-
     def __call__(self, parser, namespace, values, option_string=None):
         """Call the function."""
         setattr(namespace, self.dest, tuple(values))
@@ -48,7 +47,9 @@ class ArgsToTuple(argparse.Action):
 class ParamsToDict(argparse.Action):
     """
     Convert command-line parameters in an argument to a dictionary.
+    
     Adapted from https://github.com/joaomcteixeira/taurenmd
+    
     Example
     -------
     Where ``-x`` is an optional argument of the command-line client
@@ -68,7 +69,6 @@ class ParamsToDict(argparse.Action):
 class CustomParser(argparse.ArgumentParser):
     """Custom parser class."""
 
-
     def error(self, message):
         """Present error message."""
         self.print_help()
@@ -79,11 +79,14 @@ class CustomParser(argparse.ArgumentParser):
 def parse_doc_params(docstring):
     """
     Parse client docstrings.
+    
     Separates PROG, DESCRIPTION and USAGE from client main docstring.
+    
     Parameters
     ----------
     docstring : str
         The module docstring.
+    
     Returns
     -------
     tuple
@@ -100,6 +103,7 @@ def parse_doc_params(docstring):
 def add_subparser(parser, module):
     """
     Add a subcommand to a parser.
+    
     Parameters
     ----------
     parser : `argparse.add_suparsers object <https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser.add_subparsers>`_
@@ -129,8 +133,10 @@ def add_subparser(parser, module):
 def add_version(parser):
     """
     Add version ``-v`` option to parser.
+    
     Displays a message informing the current version.
     Also accessible via ``--version``.
+    
     Parameters
     ----------
     parser : `argparse.ArgumentParser <https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser>`_
@@ -180,11 +186,12 @@ def add_argument_epochs(parser):
         help=(
             'Number of times to run main optimization,'
             ' recommended at least the size of your'
-            ' ensemble.'          
+            ' ensemble.'
             ),
-    type=int,
-    required=True,
-    )
+        type=int,
+        required=True,
+        )
+
 
 def add_argument_pdb_files(parser):
     """
@@ -253,26 +260,26 @@ def add_argument_custom_bc_error(parser):
             ),
         type=str,
         default=None
-    )
+        )
 
 
 def add_argument_number_conformers(parser):
-    """Add argument for number of conformers in ensemble"""
+    """Add argument for number of conformers in ensemble."""
     parser.add_argument(
         '-nc',
         '--nconfs',
         help='Number of conformers in ensemble.',
         type=int,
         required=True,
-    )
+        )
 
 
 def add_argument_number_residues(parser):
-    """Add argument for number of residues in protein"""
+    """Add argument for number of residues in protein."""
     parser.add_argument(
         '-nr',
         '--nres',
         help='Number of residues in protein.',
         type=int,
         required=True,
-    )
+        )
