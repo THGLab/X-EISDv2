@@ -11,6 +11,7 @@ from os import cpu_count
 from xeisd import __version__
 from xeisd.libs.libparse import values_to_dict
 
+
 detailed = "detailed instructions:\n\n{}"
 
 

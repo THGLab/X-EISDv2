@@ -3,24 +3,17 @@ Help X-EISD perform calculations with third-party programs.
 
 Initial creation made with integrated SPyCi-PDB calculators in mind.
 """
-import pandas as pd
-
 from functools import partial
 
-from xeisd import log
-from xeisd.logger import S, T, init_files, report_on_crash
-
-from xeisd.components.parser import Stack
-from xeisd.components import (
-    default_bc_errors,
-    noe_name,
-    pre_name,
-    )
-
-from spycipdb.core.calculators import *  # noqa: F403
-from spycipdb.components.helpers import *  # noqa: F403
-
+import pandas as pd
 from idpconfgen.libs.libmulticore import pool_function
+from spycipdb.components.helpers import *  # noqa: F403
+from spycipdb.core.calculators import *  # noqa: F403
+
+from xeisd import log
+from xeisd.components import default_bc_errors, noe_name, pre_name
+from xeisd.components.parser import Stack
+from xeisd.logger import S, T, init_files, report_on_crash
 
 
 def selective_calculator(

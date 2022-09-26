@@ -8,20 +8,20 @@ Inspired/imported from:
 import numpy as np
 
 from xeisd.components import (
-    exp_idx,
-    exp_val,
-    exp_err,
+    cs_name,
     exp_atmID,
+    exp_err,
+    exp_idx,
     exp_max,
     exp_min,
-    saxs_name,
-    cs_name,
+    exp_val,
     fret_name,
     jc_name,
     noe_name,
     pre_name,
     rdc_name,
-    rh_name
+    rh_name,
+    saxs_name,
     )
 
 

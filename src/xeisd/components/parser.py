@@ -69,28 +69,29 @@ CUSTOM format:
     where the index is the "X-axis value" of the scattering plot.
     !!IMPORTANT!!
 """
-import json
 import ast
+import json
+
 import numpy as np
 import pandas as pd
 
 from xeisd.components import (
-    exp_idx,
-    exp_val,
-    exp_err,
+    cs_name,
+    default_bc_errors,
     exp_atmID,
+    exp_err,
+    exp_idx,
     exp_max,
     exp_min,
-    parse_mode_exp,
-    saxs_name,
-    cs_name,
+    exp_val,
     fret_name,
     jc_name,
     noe_name,
+    parse_mode_exp,
     pre_name,
     rdc_name,
     rh_name,
-    default_bc_errors,
+    saxs_name,
     )
 
 

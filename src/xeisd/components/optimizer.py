@@ -6,12 +6,7 @@ https://github.com/Oufan75/X-EISD/blob/master/eisd/optimizer.py
 """
 import numpy as np
 
-from xeisd.components import (
-    modes,
-    eisd_run_all,
-    opt_max,
-    opt_mc,
-    )
+from xeisd.components import eisd_run_all, modes, opt_max, opt_mc
 from xeisd.components.scorers import *
 
 

@@ -16,12 +16,10 @@ import argparse
 import sys
 
 from xeisd import __version__, log
-
+from xeisd.clis import cli_score
 from xeisd.libs import libcli
 from xeisd.logger import S
-from xeisd.clis import (
-    cli_score,
-    )
+
 
 _prog, _description, _usageage = libcli.parse_doc_params(__doc__)
 

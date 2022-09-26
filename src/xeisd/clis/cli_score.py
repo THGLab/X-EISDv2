@@ -35,32 +35,32 @@ USAGE:
 OUTPUT:
 
 """
-import json
 import argparse
+import json
 import shutil
 from functools import partial
 
+from idpconfgen.libs.libio import extract_from_tar, read_path_bundle
+from idpconfgen.libs.libmulticore import pool_function
+from idpconfgen.libs.libstructure import Structure
+
 from xeisd import Path, log
+from xeisd.components import (
+    XEISD_TITLE,
+    avg_bc_idx,
+    default_bc_errors,
+    meta_data,
+    parse_mode_back,
+    parse_mode_exp,
+    rmse_idx,
+    score_idx,
+    )
+from xeisd.components.helper import selective_calculator
+from xeisd.components.optimizer import XEISD
+from xeisd.components.parser import parse_bc_errors, parse_data
 from xeisd.libs import libcli
 from xeisd.logger import S, T, init_files, report_on_crash
 
-from xeisd.components import (
-    default_bc_errors,
-    parse_mode_exp,
-    parse_mode_back,
-    rmse_idx,
-    score_idx,
-    avg_bc_idx,
-    XEISD_TITLE,
-    meta_data,
-    )
-from xeisd.components.parser import parse_data, parse_bc_errors
-from xeisd.components.optimizer import XEISD
-from xeisd.components.helper import selective_calculator
-
-from idpconfgen.libs.libstructure import Structure
-from idpconfgen.libs.libio import extract_from_tar, read_path_bundle
-from idpconfgen.libs.libmulticore import pool_function
 
 LOGFILESNAME = '.xeisd_score'
 TMPDIR = '__tmpscore__'
