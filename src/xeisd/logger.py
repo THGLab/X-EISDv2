@@ -1,5 +1,6 @@
 """
 Manages operations with logging.
+
 Imported from:
 https://github.com/julie-forman-kay-lab/IDPConformerGenerator/blob/3aef6b085ec09eeebc5812639a5eb6832c0215cd/src/idpconfgen/logger.py
 """
@@ -33,6 +34,7 @@ Snull = partial(subline, spacer='', indent=0)
 def init_files(log, logfilesname, clear=False):
     """
     Initiate log files.
+    
     Three log files are created:
         - .info
         - .debug
@@ -78,6 +80,7 @@ def report_on_crash(
         ):
     """
     Report to a file upon exception(s).
+    
     If `func` raises `exception`(s), a detailed report of the `func` and
     passed `args` and `kwargs` and other details are saved to a file.
     File name is given by:
@@ -88,6 +91,7 @@ def report_on_crash(
     Propagates the `exception`.
     Keyword parameters have `ROC` verbose names to avoid collision with
     `func`'s `kwargs`.
+    
     Parameters
     ----------
     ROC_exception : Exception or tuple of Exceptions
