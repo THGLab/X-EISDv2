@@ -44,17 +44,20 @@ libcli.add_version(ap)
 subparsers = ap.add_subparsers(
     title='X-EISD routines',
     help='Short description:',
-)
+    )
 
 libcli.add_subparser(subparsers, cli_score)
+
 
 def load_args():
     """Load user input arguments."""
     return ap.parse_args()
 
+
 def maincli():
     """
     Execute subroutine.
+    
     Arguments are read from user command line input.
     """
     # prints help if not arguments are passed
