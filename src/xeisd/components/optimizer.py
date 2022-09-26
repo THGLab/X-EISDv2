@@ -1,3 +1,4 @@
+# flake8: noqa
 """
 Inspired and imported from 
 https://github.com/THGLab/X-EISD/blob/master/eisd/optimizer.py
