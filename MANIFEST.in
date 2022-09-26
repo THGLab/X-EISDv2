@@ -17,6 +17,7 @@ exclude .readthedocs.yml
 exclude .codeclimate.yml
 exclude tox.ini
 exclude .travis.yml
+exclude .vscode/*
 
 prune devtools
 prune tests
