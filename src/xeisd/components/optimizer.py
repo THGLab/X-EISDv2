@@ -78,7 +78,7 @@ class XEISD(object):
         # The first 3 items list[:3] is taken as the "rmse", "score", "back-calculation"
         # last "error" return is not used for X-EISD
         if jc_name == dtypes:
-            return jc_name, list(jc_optimization_ensemble(self.exp_data, self.bc_data, indices))
+            return jc_name, list(jc_optimization_ensemble(self.exp_data, self.bc_data, ens_size, indices))[:3]
         elif saxs_name == dtypes:
             return saxs_name, list(saxs_optimization_ensemble(self.exp_data, self.bc_data, indices, nres=self.resnum))[:3]
         elif cs_name == dtypes:

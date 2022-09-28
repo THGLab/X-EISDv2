@@ -220,8 +220,11 @@ def main(
         _output[result[0]] = {
             "rmse": result[1][rmse_idx],
             "score": result[1][score_idx],
-            "avg_bc_value": result[1][avg_bc_idx].tolist(),
+            "avg_bc_value": result[1][avg_bc_idx],
             }
+        if type(_output[result[0]]["avg_bc_value"]) != list:
+            _output[result[0]]["avg_bc_value"] = \
+                _output[result[0]]["avg_bc_value"].tolist()
     log.info(S('done'))
     
     log.info(T('Writing output onto disk'))

@@ -85,6 +85,7 @@ from xeisd.components import (
     exp_min,
     exp_val,
     fret_name,
+    jc_bc_mu,
     jc_name,
     noe_name,
     parse_mode_exp,
@@ -327,7 +328,13 @@ def parse_data(filenames, mode, bc_errors=default_bc_errors):
                         lists.append(raw[conf])
                 
                 data = pd.DataFrame(lists)
-                parsed[module] = Stack(module, data, bc_errors[module], None)
+                # assign mu value for JC back-calculations
+                if module == jc_name:
+                    parsed[module] = \
+                        Stack(module, data, bc_errors[module], jc_bc_mu)
+                else:
+                    parsed[module] = \
+                        Stack(module, data, bc_errors[module], None)
             except Exception as e:
                 errlogs.append(e)
             
