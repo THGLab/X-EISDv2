@@ -292,7 +292,7 @@ def parse_data(filenames, mode, bc_errors=default_bc_errors):
                     data = parse_cs_data(filenames[module])
                 elif module == fret_name:
                     parsed[module] = \
-                        Stack(module, pd.read_csv(filenames[module], delimiter=','), 0.02, None)  # noqa: E501
+                        Stack(module, pd.read_csv(filenames[module], delimiter=','), None, None)  # noqa: E501
                     continue
                 elif module == jc_name:
                     data = parse_nmrstar_data(filenames[module])
@@ -304,7 +304,7 @@ def parse_data(filenames, mode, bc_errors=default_bc_errors):
                     data = parse_nmrstar_data(filenames[module])
                 elif module == rh_name:
                     parsed[module] = \
-                        Stack(module, pd.read_csv(filenames[module], delimiter=','), 0.3, None)  # noqa: E501
+                        Stack(module, pd.read_csv(filenames[module], delimiter=','), None, None)  # noqa: E501
                     continue
             except TypeError:
                 data = pd.read_csv(filenames[module], delimiter=',')
@@ -326,7 +326,6 @@ def parse_data(filenames, mode, bc_errors=default_bc_errors):
                     # experimental values
                     for conf in raw:
                         lists.append(raw[conf])
-                
                 data = pd.DataFrame(lists)
                 # assign mu value for JC back-calculations
                 if module == jc_name:
