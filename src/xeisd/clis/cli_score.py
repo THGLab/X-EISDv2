@@ -136,6 +136,7 @@ def main(
         Defaults to 1.
     """
     init_files(log, LOGFILESNAME)
+    back_data = None
     
     # Sets back-calculator errors
     if custom_error:
@@ -201,7 +202,10 @@ def main(
                 bc_errors,
                 ncores,
                 )
-            back_data = {**back_data, **new_back_data}
+            if back_data:
+                back_data = {**back_data, **new_back_data}
+            else:
+                back_data = new_back_data
         except UnboundLocalError:
             log.info(S('You must provide an ensemble of PDBs to perform back-calculations.'))  # noqa: E501
             return
@@ -220,8 +224,11 @@ def main(
         _output[result[0]] = {
             "rmse": result[1][rmse_idx],
             "score": result[1][score_idx],
-            "avg_bc_value": result[1][avg_bc_idx].tolist(),
+            "avg_bc_value": result[1][avg_bc_idx],
             }
+        if type(_output[result[0]]["avg_bc_value"]) != list:
+            _output[result[0]]["avg_bc_value"] = \
+                _output[result[0]]["avg_bc_value"].tolist()
     log.info(S('done'))
     
     log.info(T('Writing output onto disk'))

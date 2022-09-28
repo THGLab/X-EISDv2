@@ -2,8 +2,13 @@
 Changelog
 =========
 
+* JC and smFRET scoring functions
+* Integrate JC and smFRET BC by SPyCi-PDB if needed
+
 v0.0.6 (2022-09-26)
 ------------------------------------------------------------
+
+* Fix tests
 
 v0.0.5 (2022-09-26)
 ------------------------------------------------------------

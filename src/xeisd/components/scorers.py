@@ -243,8 +243,8 @@ def fret_optimization_ensemble(
         ):
     """Logic for fret scoring module."""
     # prepare data
-    exp = exp_data[fret_name].data
-    exp_sigma = exp_data[fret_name].sigma
+    exp = exp_data[fret_name].data[exp_val].values
+    exp_sigma = exp_data[fret_name].data[exp_err].values
 
     # NOTE: watch out for 2D dataframe here
     if indices is None:
@@ -328,8 +328,8 @@ def jc_optimization_ensemble(
 def noe_optimization_ensemble(
         exp_data,
         bc_data,
-        indices,
         ens_size,
+        indices,
         old_vals=None,
         popped_structure=None,
         new_index=None,
@@ -375,8 +375,8 @@ def noe_optimization_ensemble(
 def pre_optimization_ensemble(
         exp_data,
         bc_data,
-        indices,
         ens_size,
+        indices,
         old_vals=None,
         popped_structure=None,
         new_index=None,
@@ -419,8 +419,8 @@ def pre_optimization_ensemble(
 def rdc_optimization_ensemble(
         exp_data,
         bc_data,
-        indices,
         ens_size,
+        indices,
         old_vals=None,
         popped_structure=None,
         new_index=None,
@@ -452,8 +452,8 @@ def rdc_optimization_ensemble(
 def rh_optimization_ensemble(
         exp_data,
         bc_data,
-        indices,
         ens_size,
+        indices,
         old_vals=None,
         popped_structure=None,
         new_index=None,

@@ -78,21 +78,21 @@ class XEISD(object):
         # The first 3 items list[:3] is taken as the "rmse", "score", "back-calculation"
         # last "error" return is not used for X-EISD
         if jc_name == dtypes:
-            return jc_name, list(jc_optimization_ensemble(self.exp_data, self.bc_data, indices))
+            return jc_name, list(jc_optimization_ensemble(self.exp_data, self.bc_data, ens_size, indices))[:3]
         elif saxs_name == dtypes:
-            return saxs_name, list(saxs_optimization_ensemble(self.exp_data, self.bc_data, indices, nres=self.resnum))[:3]
+            return saxs_name, list(saxs_optimization_ensemble(self.exp_data, self.bc_data, indices, ens_size, self.resnum))[:3]
         elif cs_name == dtypes:
-            return cs_name, list(cs_optimization_ensemble(self.exp_data, self.bc_data, indices))[:3]
+            return cs_name, list(cs_optimization_ensemble(self.exp_data, self.bc_data, ens_size, indices))[:3]
         elif fret_name == dtypes:
-            return fret_name, list(fret_optimization_ensemble(self.exp_data, self.bc_data, indices))[:3]
+            return fret_name, list(fret_optimization_ensemble(self.exp_data, self.bc_data, ens_size, indices))[:3]
         elif noe_name == dtypes:
-            return noe_name, list(noe_optimization_ensemble(self.exp_data, self.bc_data, indices, ens_size))[:3]
+            return noe_name, list(noe_optimization_ensemble(self.exp_data, self.bc_data, ens_size, indices))[:3]
         elif pre_name == dtypes:
-            return pre_name, list(pre_optimization_ensemble(self.exp_data, self.bc_data, indices, ens_size))[:3]
+            return pre_name, list(pre_optimization_ensemble(self.exp_data, self.bc_data, ens_size, indices))[:3]
         elif rdc_name == dtypes:
-            return rdc_name, list(rdc_optimization_ensemble(self.exp_data, self.bc_data, indices))[:3]
+            return rdc_name, list(rdc_optimization_ensemble(self.exp_data, self.bc_data, ens_size, indices))[:3]
         elif rh_name == dtypes:
-            return rh_name, list(rh_optimization_ensemble(self.exp_data, self.bc_data, indices))[:3]
+            return rh_name, list(rh_optimization_ensemble(self.exp_data, self.bc_data, ens_size, indices))[:3]
         
         # code should not go here
         return False

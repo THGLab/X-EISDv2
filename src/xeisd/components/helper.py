@@ -11,7 +11,14 @@ from spycipdb.components.helpers import *  # noqa: F403
 from spycipdb.core.calculators import *  # noqa: F403
 
 from xeisd import log
-from xeisd.components import default_bc_errors, noe_name, pre_name
+from xeisd.components import (
+    default_bc_errors,
+    fret_name,
+    jc_bc_mu,
+    jc_name,
+    noe_name,
+    pre_name,
+    )
 from xeisd.components.parser import Stack
 from xeisd.logger import S, T, init_files, report_on_crash
 
@@ -71,13 +78,29 @@ def selective_calculator(
                 calc_pre,  # noqa: F405
                 exp_fp[pre_name],
                 )
+        elif exp == jc_name:
+            execute = partial(
+                report_on_crash,
+                calc_jc,  # noqa: F405
+                exp_fp[jc_name],
+                )
+        elif exp == fret_name:
+            execute = partial(
+                report_on_crash,
+                calc_smfret,  # noqa: F405
+                exp_fp[fret_name],
+                )
         # add more `elif` statements as we test more modules
         
         execute_pool = pool_function(execute, pdbfilepaths, ncores=ncores)
         for result in execute_pool:
             lists.append(result[1])
         data = pd.DataFrame(lists)
-        new_bc[exp] = Stack(exp, data, bc_errors[exp], None)
+        
+        if exp == jc_name:
+            new_bc[exp] = Stack(exp, data, bc_errors[exp], jc_bc_mu)
+        else:
+            new_bc[exp] = Stack(exp, data, bc_errors[exp], None)
         
         log.info(S("done"))
             
