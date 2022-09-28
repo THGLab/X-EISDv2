@@ -136,6 +136,7 @@ def main(
         Defaults to 1.
     """
     init_files(log, LOGFILESNAME)
+    back_data = None
     
     # Sets back-calculator errors
     if custom_error:
@@ -201,7 +202,10 @@ def main(
                 bc_errors,
                 ncores,
                 )
-            back_data = {**back_data, **new_back_data}
+            if back_data:
+                back_data = {**back_data, **new_back_data}
+            else:
+                back_data = new_back_data
         except UnboundLocalError:
             log.info(S('You must provide an ensemble of PDBs to perform back-calculations.'))  # noqa: E501
             return

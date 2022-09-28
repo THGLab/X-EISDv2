@@ -13,6 +13,7 @@ from spycipdb.core.calculators import *  # noqa: F403
 from xeisd import log
 from xeisd.components import (
     default_bc_errors,
+    fret_name,
     jc_bc_mu,
     jc_name,
     noe_name,
@@ -82,6 +83,12 @@ def selective_calculator(
                 report_on_crash,
                 calc_jc,  # noqa: F405
                 exp_fp[jc_name],
+                )
+        elif exp == fret_name:
+            execute = partial(
+                report_on_crash,
+                calc_smfret,  # noqa: F405
+                exp_fp[fret_name],
                 )
         # add more `elif` statements as we test more modules
         
