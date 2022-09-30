@@ -23,6 +23,32 @@ from xeisd.components.parser import Stack
 from xeisd.logger import S, T, init_files, report_on_crash
 
 
+def return_indices_of_bc_saxs(exp_idx, bc_idx):
+    """
+    Truncate indexes from back-calculated data to match exp data.
+    
+    Assumes back-calculated list of indicies are longer
+    (e.g. from CRYSOLv3 output).
+
+    Parameters
+    ----------
+    exp_idx : list
+        List of indicies from experiment.
+    
+    bc_idx : list
+        List of indices from back-calculator.
+    
+    Returns
+    -------
+    to_keep : list of int
+        List of positions of indices to keep
+        to match experiment data.
+    """
+    exp_set = set(exp_idx)
+    
+    return [i for i, v in enumerate(bc_idx) if v in exp_set]
+
+
 def selective_calculator(
         pdbfilepaths,
         exp_fp,
