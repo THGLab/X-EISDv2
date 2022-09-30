@@ -13,11 +13,14 @@ from spycipdb.core.calculators import *  # noqa: F403
 from xeisd import log
 from xeisd.components import (
     default_bc_errors,
+    exp_idx,
+    exp_val,
     fret_name,
     jc_bc_mu,
     jc_name,
     noe_name,
     pre_name,
+    saxs_name,
     )
 from xeisd.components.parser import Stack
 from xeisd.logger import S, T, init_files, report_on_crash
@@ -28,7 +31,6 @@ def return_indices_of_bc_saxs(exp_idx, bc_idx):
     Truncate indexes from back-calculated data to match exp data.
     
     Assumes back-calculated list of indicies are longer
-    (e.g. from CRYSOLv3 output).
 
     Parameters
     ----------
@@ -116,15 +118,35 @@ def selective_calculator(
                 calc_smfret,  # noqa: F405
                 exp_fp[fret_name],
                 )
+        elif exp == saxs_name:
+            execute = partial(
+                report_on_crash,
+                crysol_helper,  # noqa: F405
+                lm=20,  # default number of harmonics for crysolv3
+                )
+            str_pdbfp = []
+            for path in pdbfilepaths:
+                str_pdbfp.append(str(path))
         # add more `elif` statements as we test more modules
         
-        execute_pool = pool_function(execute, pdbfilepaths, ncores=ncores)
+        if exp == saxs_name:
+            execute_pool = pool_function(execute, str_pdbfp, ncores=ncores)
+        else:
+            execute_pool = pool_function(execute, pdbfilepaths, ncores=ncores)
+        
         for result in execute_pool:
-            lists.append(result[1])
+            if exp == saxs_name:
+                lists.append(result[1][exp_val])
+                saxs_bc_idx = result[1][exp_idx]
+            else:
+                lists.append(result[1])
         data = pd.DataFrame(lists)
         
         if exp == jc_name:
             new_bc[exp] = Stack(exp, data, bc_errors[exp], jc_bc_mu)
+        # saving saxs indexes to mu variable in stack
+        elif exp == saxs_name:
+            new_bc[exp] = Stack(exp, data, bc_errors[exp], saxs_bc_idx)
         else:
             new_bc[exp] = Stack(exp, data, bc_errors[exp], None)
         

@@ -209,7 +209,7 @@ def main(
                 aligned = return_indices_of_bc_saxs(exp_indices, bc_idx)
                 back_data[saxs_name].data = \
                     back_data[saxs_name].data.iloc[:, aligned]
-            
+
     if tobc:
         try:
             new_back_data = selective_calculator(
@@ -219,6 +219,15 @@ def main(
                 bc_errors,
                 ncores,
                 )
+            
+            if saxs_name in new_back_data:
+                bc_idx = new_back_data[saxs_name].mu
+                exp_indices = exp_data[saxs_name].data[exp_idx].values.tolist()
+                if len(bc_idx) != len(exp_indices):
+                    aligned = return_indices_of_bc_saxs(exp_indices, bc_idx)
+                    new_back_data[saxs_name].data = \
+                        new_back_data[saxs_name].data.iloc[:, aligned]
+            
             if back_data:
                 back_data = {**back_data, **new_back_data}
             else:
