@@ -2,6 +2,9 @@
 Changelog
 =========
 
+* SAXS scoring functions clean and test
+* Integrate SAXS BC by SPyCi-PDB if needed
+
 v0.0.7 (2022-09-28)
 ------------------------------------------------------------
 

@@ -49,13 +49,18 @@ from xeisd.components import (
     XEISD_TITLE,
     avg_bc_idx,
     default_bc_errors,
+    exp_idx,
     meta_data,
     parse_mode_back,
     parse_mode_exp,
     rmse_idx,
+    saxs_name,
     score_idx,
     )
-from xeisd.components.helper import selective_calculator
+from xeisd.components.helper import (
+    return_indices_of_bc_saxs,
+    selective_calculator,
+    )
 from xeisd.components.optimizer import XEISD
 from xeisd.components.parser import parse_bc_errors, parse_data
 from xeisd.libs import libcli
@@ -192,6 +197,18 @@ def main(
             for e in _parse_errs:
                 log.info(S(str(e)))
     log.info(S('done'))
+    
+    # Checks if back-calculated SAXS contains more data points than experiment
+    if saxs_name in filenames[parse_mode_back]:
+        with open(filenames[parse_mode_back][saxs_name], 'r') as f:
+            raw = json.loads(f.read())
+            bc_idx = raw['format']
+            exp_indices = exp_data[saxs_name].data[exp_idx].values.tolist()
+            
+            if len(bc_idx) != len(exp_indices):
+                aligned = return_indices_of_bc_saxs(exp_indices, bc_idx)
+                back_data[saxs_name].data = \
+                    back_data[saxs_name].data.iloc[:, aligned]
 
     if tobc:
         try:
@@ -202,6 +219,15 @@ def main(
                 bc_errors,
                 ncores,
                 )
+            
+            if saxs_name in new_back_data:
+                bc_idx = new_back_data[saxs_name].mu
+                exp_indices = exp_data[saxs_name].data[exp_idx].values.tolist()
+                if len(bc_idx) != len(exp_indices):
+                    aligned = return_indices_of_bc_saxs(exp_indices, bc_idx)
+                    new_back_data[saxs_name].data = \
+                        new_back_data[saxs_name].data.iloc[:, aligned]
+            
             if back_data:
                 back_data = {**back_data, **new_back_data}
             else:
