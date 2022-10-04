@@ -2,6 +2,9 @@
 Changelog
 =========
 
+v0.0.9 (2022-10-04)
+------------------------------------------------------------
+
 * CS scoring functions clean and test
 * Integrate CS BC by SPyCi-PDB (UCBShift) if needed
 
