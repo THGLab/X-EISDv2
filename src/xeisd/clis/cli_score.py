@@ -40,6 +40,7 @@ import json
 import shutil
 from functools import partial
 
+import pandas as pd
 from idpconfgen.libs.libio import extract_from_tar, read_path_bundle
 from idpconfgen.libs.libmulticore import pool_function
 from idpconfgen.libs.libstructure import Structure
@@ -48,8 +49,11 @@ from xeisd import Path, log
 from xeisd.components import (
     XEISD_TITLE,
     avg_bc_idx,
+    cs_name,
     default_bc_errors,
+    exp_atmID,
     exp_idx,
+    exp_resnum,
     meta_data,
     parse_mode_back,
     parse_mode_exp,
@@ -198,6 +202,8 @@ def main(
                 log.info(S(str(e)))
     log.info(S('done'))
     
+    # START----CHECKS SPECIFIC MODULES------
+
     # Checks if back-calculated SAXS contains more data points than experiment
     if saxs_name in filenames[parse_mode_back]:
         with open(filenames[parse_mode_back][saxs_name], 'r') as f:
@@ -210,6 +216,33 @@ def main(
                 back_data[saxs_name].data = \
                     back_data[saxs_name].data.iloc[:, aligned]
 
+    # Checks if back-calculated CS data contains more atom names than exp.
+    # Also aligns back-calc data to residues and atoms from exp
+    if cs_name in filenames[parse_mode_back]:
+        with open(filenames[parse_mode_back][cs_name], 'r') as f:
+            raw = json.loads(f.read())
+            res_list = raw['format']['res']
+            raw.pop('format', None)
+            
+            exp_cs = exp_data[cs_name].data
+            realigned_bc = []
+            
+            for conf in raw:
+                per_conf = []
+                cs_info = raw[conf]
+                
+                for _idx, row in exp_cs.iterrows():
+                    resnum = row[exp_resnum]
+                    atmid = row[exp_atmID]
+                    res_idx = res_list.index(resnum)
+                    per_conf.append(cs_info[atmid][res_idx])
+                
+                realigned_bc.append(per_conf)
+            
+            back_data[cs_name].data = pd.DataFrame(realigned_bc)
+    
+    # END-----CHECKS SPECIFIC MODULES-------
+    
     if tobc:
         try:
             new_back_data = selective_calculator(

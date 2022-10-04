@@ -206,8 +206,7 @@ def cs_optimization_ensemble(
         # !!! note here, may not be required based on new logic
     
     """
-    # TODO: if incorrect shape, shave off values from bc_data
-    # to match exp_data
+    # BC data is shaved off at the scoring and back-calculation helper step
     exp_cs = exp_data[cs_name].data[exp_val].values
     exp_sigma = exp_data[cs_name].data[exp_err].values
     atom_types = exp_data[cs_name].data[exp_atmID].values
