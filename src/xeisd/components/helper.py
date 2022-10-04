@@ -135,7 +135,7 @@ def selective_calculator(
                 )
         elif exp == cs_name:
             if ncores >= 10:
-                log.info(S("Warning: UCBShift is RAM hungry, consider running with less CPUs."))
+                log.info(S("Warning: UCBShift is RAM hungry, consider running with less CPUs."))  # noqa: E501
             execute = partial(
                 report_on_crash,
                 calc_sing_pdb,  # noqa: F405
@@ -158,12 +158,12 @@ def selective_calculator(
                 
                 raw_bc = {}
                 res_list = result[1].RESNUM.values.astype(int).tolist()
-                raw_bc['H'] = result[1].H_UCBShift.values.astype(float).tolist()
-                raw_bc['HA'] = result[1].HA_UCBShift.values.astype(float).tolist()
-                raw_bc['C'] = result[1].C_UCBShift.values.astype(float).tolist()
-                raw_bc['CA'] = result[1].CA_UCBShift.values.astype(float).tolist()
-                raw_bc['CB'] = result[1].CB_UCBShift.values.astype(float).tolist()
-                raw_bc['N'] = result[1].CB_UCBShift.values.astype(float).tolist()
+                raw_bc['H'] = result[1].H_UCBShift.values.astype(float).tolist()  # noqa: E501
+                raw_bc['HA'] = result[1].HA_UCBShift.values.astype(float).tolist()  # noqa: E501
+                raw_bc['C'] = result[1].C_UCBShift.values.astype(float).tolist()  # noqa: E501
+                raw_bc['CA'] = result[1].CA_UCBShift.values.astype(float).tolist()  # noqa: E501
+                raw_bc['CB'] = result[1].CB_UCBShift.values.astype(float).tolist()  # noqa: E501
+                raw_bc['N'] = result[1].CB_UCBShift.values.astype(float).tolist()  # noqa: E501
 
                 try:
                     exp_data = parse_cs_data(exp_fp[cs_name])
