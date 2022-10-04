@@ -12,8 +12,11 @@ from spycipdb.core.calculators import *  # noqa: F403
 
 from xeisd import log
 from xeisd.components import (
+    cs_name,
     default_bc_errors,
+    exp_atmID,
     exp_idx,
+    exp_resnum,
     exp_val,
     fret_name,
     jc_bc_mu,
@@ -22,7 +25,7 @@ from xeisd.components import (
     pre_name,
     saxs_name,
     )
-from xeisd.components.parser import Stack
+from xeisd.components.parser import Stack, parse_cs_data
 from xeisd.logger import S, T, init_files, report_on_crash
 
 
@@ -91,6 +94,12 @@ def selective_calculator(
     init_files(log, ".xeisd_bc")
     log.info(T(f"Starting back-calculation of necessary modules using {ncores} workers"))  # noqa: E501
     
+    # make a list of strings of paths
+    # some functions cannot take a `Path` obj
+    str_pdbfp = []
+    for path in pdbfilepaths:
+        str_pdbfp.append(str(path))
+    
     for exp in modules:
         log.info(S(f"back-calculating {exp} datatypes..."))
         lists = []
@@ -124,12 +133,17 @@ def selective_calculator(
                 crysol_helper,  # noqa: F405
                 lm=20,  # default number of harmonics for crysolv3
                 )
-            str_pdbfp = []
-            for path in pdbfilepaths:
-                str_pdbfp.append(str(path))
+        elif exp == cs_name:
+            if ncores >= 10:
+                log.info(S("Warning: UCBShift is RAM hungry, consider running with less CPUs."))
+            execute = partial(
+                report_on_crash,
+                calc_sing_pdb,  # noqa: F405
+                pH=5,  # default pH value for UCBShift
+                )
         # add more `elif` statements as we test more modules
         
-        if exp == saxs_name:
+        if exp == saxs_name or exp == cs_name:
             execute_pool = pool_function(execute, str_pdbfp, ncores=ncores)
         else:
             execute_pool = pool_function(execute, pdbfilepaths, ncores=ncores)
@@ -138,6 +152,31 @@ def selective_calculator(
             if exp == saxs_name:
                 lists.append(result[1][exp_val])
                 saxs_bc_idx = result[1][exp_idx]
+            # Parsing currently configured for UCBShift
+            elif exp == cs_name:
+                per_conf = []
+                
+                raw_bc = {}
+                res_list = result[1].RESNUM.values.astype(int).tolist()
+                raw_bc['H'] = result[1].H_UCBShift.values.astype(float).tolist()
+                raw_bc['HA'] = result[1].HA_UCBShift.values.astype(float).tolist()
+                raw_bc['C'] = result[1].C_UCBShift.values.astype(float).tolist()
+                raw_bc['CA'] = result[1].CA_UCBShift.values.astype(float).tolist()
+                raw_bc['CB'] = result[1].CB_UCBShift.values.astype(float).tolist()
+                raw_bc['N'] = result[1].CB_UCBShift.values.astype(float).tolist()
+
+                try:
+                    exp_data = parse_cs_data(exp_fp[cs_name])
+                except TypeError:
+                    exp_data = pd.read_csv(exp_fp[cs_name], delimiter=',')
+                
+                for _idx, row in exp_data.iterrows():
+                    resnum = row[exp_resnum]
+                    atmid = row[exp_atmID]
+                    res_idx = res_list.index(resnum)
+                    per_conf.append(raw_bc[atmid][res_idx])
+                    
+                lists.append(per_conf)
             else:
                 lists.append(result[1])
         data = pd.DataFrame(lists)
@@ -146,6 +185,9 @@ def selective_calculator(
             new_bc[exp] = Stack(exp, data, bc_errors[exp], jc_bc_mu)
         # saving saxs indexes to mu variable in stack
         elif exp == saxs_name:
+            new_bc[exp] = Stack(exp, data, bc_errors[exp], saxs_bc_idx)
+        # saving cs resnum to mu variable in stack
+        elif exp == cs_name:
             new_bc[exp] = Stack(exp, data, bc_errors[exp], saxs_bc_idx)
         else:
             new_bc[exp] = Stack(exp, data, bc_errors[exp], None)
