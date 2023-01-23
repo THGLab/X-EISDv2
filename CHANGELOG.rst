@@ -2,6 +2,8 @@
 Changelog
 =========
 
+* Optimization subclient functionalities
+
 v0.0.9 (2022-10-04)
 ------------------------------------------------------------
 
