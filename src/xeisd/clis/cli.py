@@ -16,7 +16,7 @@ import argparse
 import sys
 
 from xeisd import __version__, log
-from xeisd.clis import cli_score, cli_optimize
+from xeisd.clis import cli_optimize, cli_score
 from xeisd.libs import libcli
 from xeisd.logger import S
 

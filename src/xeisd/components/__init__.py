@@ -98,7 +98,7 @@ def add_optimization_mode(parser):
             'Defaults to max.'
             ),
         default=opt_max,
-        choices=tuple(opt_max, opt_mc),
+        choices=tuple((opt_max, opt_mc)),
         )
 
 
