@@ -28,10 +28,11 @@ USAGE:
         [--pdb-structures] \
         [--nconfs] \
         [--nres] \
+        [--custom-error] \
+        [--epochs] \
         [--mode] \
         [--num-exchange] \
-        [--mc-temperature] \
-        [--epochs] \
+        [--mc-beta] \
         [--output] \
         [--ncores]
 
@@ -51,8 +52,22 @@ from idpconfgen.libs.libmulticore import pool_function
 from idpconfgen.libs.libstructure import Structure
 
 from xeisd import Path, log
-
-
+from xeisd.components import (
+    add_optimization_mode,
+    XEISD_TITLE,
+    avg_bc_idx,
+    cs_name,
+    default_bc_errors,
+    exp_atmID,
+    exp_idx,
+    exp_resnum,
+    meta_data,
+    parse_mode_back,
+    parse_mode_exp,
+    rmse_idx,
+    saxs_name,
+    score_idx,
+    )
 from xeisd.components.helper import (
     return_indices_of_bc_saxs,
     selective_calculator,
@@ -70,3 +85,113 @@ _name = 'optimize'
 _help = 'Optimize conformational ensembles against experimental data.'
 
 _prog, _des, _usage = libcli.parse_doc_params(__doc__)
+
+ap = libcli.CustomParser(
+    prog=_prog,
+    description=libcli.detailed.format(_des),
+    usage=_usage,
+    formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+
+libcli.add_argument_data_files(ap)
+libcli.add_argument_pdb_files(ap)
+libcli.add_argument_number_conformers(ap)
+libcli.add_argument_number_residues(ap)
+libcli.add_argument_custom_bc_error(ap)
+libcli.add_argument_epochs(ap)
+add_optimization_mode(ap)
+
+ap.add_argument(
+    '-nex',
+    '--num-exchange',
+    help=(
+        'Number of conformer exchange attempts. '
+        'Defaults to 100.'
+        ),
+    default=100,
+    type=int,
+)
+
+ap.add_argument(
+    '-mct',
+    '--mc-beta',
+    help=(
+        'Temperature parameter for Metropolis Monte Carlo optimization mode. '
+        'Defaults to 0.1.'
+        ),
+    default=0.1,
+    type=float,
+)
+
+libcli.add_argument_output(ap)
+libcli.add_argument_ncores(ap)
+
+ap.add_argument(
+    '--tmpdir',
+    help=(
+        'Temporary directory to store data during calculation '
+        'if needed.'
+        ),
+    type=Path,
+    default=TMPDIR,
+    )
+
+
+def main(
+        data_files,
+        nconfs,
+        nres,
+        output,
+        epochs,
+        num_exchange=100,
+        mc_beta=0.1,
+        custom_error=None,
+        pdb_files=None,
+        ncores=1,
+        tmpdir=TMPDIR,
+        func=None,
+        ):
+    """
+    Processes and optimizes ensembles.
+    
+    Parameters
+    ----------
+    data_files : str or Path, required
+        Path to the folder containing experimental and back-calc
+        data files.
+    
+    nconfs : int, required
+        Number of conformations in ensemble.
+    
+    nres : int required
+        Number of residues in protein.
+    
+    pdb_files : str or Path, optional
+        Path to PDB files on the disk. Accepts TAR file.
+    
+    custom_error : str or Path, optional
+        Path to the file containing custom back-calculator errors.
+    
+    output : str or Path, optional
+        Path to the folder to store eisd outputs.
+        
+    ncores : int, optional
+        Number of workers to use for multiprocessing.
+        Defaults to 1.
+    
+    num_exchange : int, optional
+        Number of conformer exchange attempts.
+        Defaults to 100.
+    
+    epochs : int, required
+        Number of times to run main optimization.
+        Recommended at lesat the size of your ensemble.
+    
+    mc_beta : float, optional
+        Temperature parameter for the Metropolis Monte Carlo
+        optimization mode.
+    """
+
+
+if __name__ == '__main__':
+    libcli.maincli(ap, main)

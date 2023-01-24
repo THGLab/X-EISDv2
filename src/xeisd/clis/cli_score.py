@@ -23,12 +23,12 @@ The internal formatting can be .JSON however.
     bc_*.saxs, bc_*.cs, bc_*.fret, etc.
 
 USAGE:
-    $ xeisd score [--data-files] [--epochs]
     $ xeisd score \
         [--data-files] \
         [--pdb-structures] \
         [--nconfs] \
         [--nres] \
+        [--custom-error] \
         [--output] \
         [--ncores]
 
