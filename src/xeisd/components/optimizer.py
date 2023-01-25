@@ -16,7 +16,6 @@ def monte_carlo(beta, old_total_score, new_total_score):
     
     # to deal with runtime error caused by large score values
     if np.any(np.isinf([old_probability, new_probability])):
-        # print('Runtime error... reset beta value')
         beta = 500. / new_probability
         new_probability = np.exp(beta * new_total_score)
         old_probability = np.exp(beta * old_total_score)
@@ -80,7 +79,7 @@ class XEISD(object):
         if jc_name == dtypes:
             return jc_name, list(jc_optimization_ensemble(
                 self.exp_data, self.bc_data, ens_size, indices
-                ))[:3]
+                ))
         elif saxs_name == dtypes:
             return saxs_name, list(saxs_optimization_ensemble(
                 self.exp_data, self.bc_data, indices, ens_size, self.resnum
@@ -117,7 +116,7 @@ class XEISD(object):
     def optimize(
         self,
         epochs,
-        ens_size,
+        final_size,
         opt_type=opt_max,
         mode=eisd_run_all,
         beta=0.1,
@@ -133,8 +132,8 @@ class XEISD(object):
         epochs : int
             Number of optimization trials.
         
-        ens_size : int
-            Number of conformers in the ensemble.
+        final_size : int
+            Final number of desired conformers.
             
         mode : str or list
             Data types to optimize.
@@ -159,15 +158,20 @@ class XEISD(object):
         """
         # switch the property
         flags = modes(mode, self.exp_data.keys())
-
+        
+        ens_size = self.ens_size
+        assert final_size < ens_size
+        
         final_results = []
         final_indices = []
         final_best_jcoups = []
+        old_scores = {}
 
         for it in range(epochs):
             # initial scores
-            indices = list(np.random.choice(np.arange(self.ens_size), ens_size, replace=False))
-            old_scores = self.calc_scores([key for key in flags if flags[key]], indices)    
+            indices = list(np.random.choice(np.arange(self.ens_size), final_size, replace=False))
+            for key in flags:
+                old_scores[key] = self.calc_scores(key, ens_size, indices)[1]
 
             new_scores = {}
             for name in flags:
@@ -177,7 +181,7 @@ class XEISD(object):
             accepted = 0
             
             for iterations in range(iters):
-                pop_index = np.random.randint(0, ens_size, 1)[0]
+                pop_index = np.random.randint(0, final_size, 1)[0]
                 popped_structure = indices[pop_index]
                 indices.pop(pop_index)
                 struct_found = False
@@ -186,7 +190,6 @@ class XEISD(object):
                     if new_index != popped_structure and new_index not in indices:
                         indices.append(new_index)
                         struct_found = True
-
                 for prop in flags:
                     if flags[prop]:
                         if prop == saxs_name:
@@ -239,7 +242,6 @@ class XEISD(object):
             
                 old_total_score = np.sum([old_scores[key][1] for key in old_scores])
                 new_total_score = np.sum([new_scores[key][1] for key in new_scores])
-
                 # optimization
                 if opt_type == opt_max:
                     to_accept = old_total_score < new_total_score
@@ -261,19 +263,19 @@ class XEISD(object):
                 if not flags[prop]:
                     if prop == pre_name:
                         old_scores[pre_name][:2] = \
-                            pre_optimization_ensemble(self.exp_data, self.bc_data, indices=indices)[:2]
+                            pre_optimization_ensemble(self.exp_data, self.bc_data, ens_size, indices)[:2]
                     if prop == jc_name:
                         old_scores[jc_name][:2] = \
-                            jc_optimization_ensemble(self.exp_data, self.bc_data, indices=indices)[:2]
+                            jc_optimization_ensemble(self.exp_data, self.bc_data, ens_size, indices)[:2]
                     if prop == cs_name:
                         old_scores[cs_name][:2] = \
-                            cs_optimization_ensemble(self.exp_data, self.bc_data, indices=indices)[:2]
+                            cs_optimization_ensemble(self.exp_data, self.bc_data, ens_size, indices)[:2]
                     if prop == fret_name:
                         old_scores[fret_name][:2] = \
-                            fret_optimization_ensemble(self.exp_data, self.bc_data, indices=indices)[:2]
+                            fret_optimization_ensemble(self.exp_data, self.bc_data, ens_size, indices)[:2]
                     if prop == saxs_name:
                         old_scores[saxs_name][:2] = \
-                            saxs_optimization_ensemble(self.exp_data, self.bc_data, indices=indices, nres=self.resnum)[:2]  # noqa: E501
+                            saxs_optimization_ensemble(self.exp_data, self.bc_data, indices, ens_size, self.resnum)[:2]  # noqa: E501
                 # aggregate results
                 s.extend(old_scores[prop][:2])
 

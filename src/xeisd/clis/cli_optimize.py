@@ -120,6 +120,17 @@ ap.add_argument(
     type=float,
     )
 
+ap.add_argument(
+    '-fc',
+    '--final-confs',
+    help=(
+        'Final number of conformers after scoring and reweighting. '
+        'Must be smaller than ensemble pool size (nconfs).'
+        ),
+    required=True,
+    type=int,
+    )
+
 libcli.add_argument_output(ap)
 libcli.add_argument_ncores(ap)
 
@@ -138,6 +149,7 @@ def main(
         data_files,
         nconfs,
         nres,
+        final_confs,
         output,
         epochs,
         mode=opt_max,
@@ -161,8 +173,11 @@ def main(
     nconfs : int, required
         Number of conformations in ensemble.
     
-    nres : int required
+    nres : int, required
         Number of residues in protein.
+        
+    final_confs : int, required
+        Final number of desired conformers after reweighting.
     
     pdb_files : str or Path, optional
         Path to PDB files on the disk. Accepts TAR file.
@@ -314,14 +329,12 @@ def main(
             log.info(S('You must provide an ensemble of PDBs to perform back-calculations.'))  # noqa: E501
             return
     
-    # TODO: make optimization multiprocessing
-    # also why is it taking so long when scoring is really fast?
     eisd_ens = XEISD(exp_data, back_data, nres, nconfs)
     log.info(T('Starting Optimization Function'))
     results, indices, best_jcoups = \
         eisd_ens.optimize(
             epochs=epochs,
-            ens_size=nconfs,
+            final_size=final_confs,
             opt_type=mode,
             beta=mc_beta,
             iters=num_exchange,
