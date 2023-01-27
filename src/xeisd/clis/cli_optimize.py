@@ -47,18 +47,22 @@ import json
 import shutil
 
 import pandas as pd
-from idpconfgen.libs.libio import extract_from_tar, read_path_bundle
+from idpconfgen.libs.libio import (
+    extract_from_tar,
+    make_folder_or_cwd,
+    read_path_bundle,
+    )
 from idpconfgen.libs.libstructure import Structure
 
 from xeisd import Path, log
 from xeisd.components import (
-    XEISD_TITLE,
     add_optimization_mode,
     cs_name,
     default_bc_errors,
     exp_atmID,
     exp_idx,
     exp_resnum,
+    jc_name,
     meta_data,
     opt_max,
     parse_mode_back,
@@ -131,7 +135,7 @@ ap.add_argument(
     type=int,
     )
 
-libcli.add_argument_output(ap)
+libcli.add_argument_output_folder(ap)
 libcli.add_argument_ncores(ap)
 
 ap.add_argument(
@@ -150,8 +154,8 @@ def main(
         nconfs,
         nres,
         final_confs,
-        output,
         epochs,
+        output_folder=None,
         mode=opt_max,
         num_exchange=100,
         mc_beta=0.1,
@@ -204,8 +208,17 @@ def main(
         Temperature parameter for the Metropolis Monte Carlo
         optimization mode.
     """
-    init_files(log, LOGFILESNAME)
     back_data = None
+    
+    if final_confs >= nconfs:
+        log.info(
+            "Warning, final number of conformations must be less than "
+            "the total number of conformers in your ensemble."
+            )
+        return
+    
+    output_folder = make_folder_or_cwd(output_folder)
+    init_files(log, Path(output_folder, LOGFILESNAME))
     
     # Sets back-calculator errors
     if custom_error:
@@ -213,7 +226,7 @@ def main(
     else:
         bc_errors = default_bc_errors
     
-        # Processes PDB files if given
+    # Processes PDB files if given
     _istarfile = False
     if pdb_files:
         log.info(T('Reading conformer ensemble paths'))
@@ -331,7 +344,7 @@ def main(
     
     eisd_ens = XEISD(exp_data, back_data, nres, nconfs)
     log.info(T('Starting Optimization Function'))
-    results, indices, best_jcoups = \
+    results, header, indices, best_jcoups = \
         eisd_ens.optimize(
             epochs=epochs,
             final_size=final_confs,
@@ -339,7 +352,24 @@ def main(
             beta=mc_beta,
             iters=num_exchange,
             )
-    std_out = XEISD_TITLE + "\n\n"  # noqa: F841
+
+    pd.DataFrame(results).to_csv(
+        Path(output_folder, 'results.csv'),
+        index=False,
+        header=header
+        )
+    pd.DataFrame(indices).to_csv(
+        Path(output_folder, 'indices.csv'),
+        index=False,
+        header=False
+        )
+    
+    if jc_name in filenames[parse_mode_exp]:
+        pd.DataFrame(best_jcoups).to_csv(
+            Path(output_folder, 'best_jcoups.csv'),
+            index=False,
+            header=False
+            )
     
     if _istarfile:
         shutil.rmtree(tmpdir)

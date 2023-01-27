@@ -248,6 +248,21 @@ def add_argument_output(parser):
         )
 
 
+def add_argument_output_folder(parser):
+    """Add argument for general output string."""
+    parser.add_argument(
+        '-of',
+        '--output-folder',
+        help=(
+            "The folder where to save the output. "
+            "NOTE: if new files have the same name of old files in the "
+            "folder, new files will replace old files."
+            ),
+        type=str,
+        default=None,
+        )
+
+
 def add_argument_custom_bc_error(parser):
     """Add argument for custom back-calculator error file."""
     parser.add_argument(

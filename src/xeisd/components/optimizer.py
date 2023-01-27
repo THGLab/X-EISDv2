@@ -283,4 +283,8 @@ class XEISD(object):
             final_indices.append(indices)
             final_best_jcoups.append(old_scores[jc_name][2])
         
-        return final_results, final_indices, final_best_jcoups
+        result_header = ['index', 'accepts']
+        for prop in flags:
+            result_header.extend([prop+'_rmsd', prop+'_score'])
+            
+        return final_results, result_header, final_indices, final_best_jcoups
