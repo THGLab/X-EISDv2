@@ -30,10 +30,11 @@ USAGE:
         [--nres] \
         [--custom-error] \
         [--epochs] \
+        [--random-seed] \
         [--mode] \
         [--num-exchange] \
         [--mc-beta] \
-        [--output] \
+        [--output-folder] \
         [--ncores]
 
 OUTPUT:
