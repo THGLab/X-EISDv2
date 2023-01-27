@@ -30,10 +30,11 @@ USAGE:
         [--nres] \
         [--custom-error] \
         [--epochs] \
+        [--random-seed] \
         [--mode] \
         [--num-exchange] \
         [--mc-beta] \
-        [--output] \
+        [--output-folder] \
         [--ncores]
 
 OUTPUT:
@@ -196,7 +197,7 @@ def main(
     custom_error : str or Path, optional
         Path to the file containing custom back-calculator errors.
     
-    output : str or Path, optional
+    output_folder : str or Path, optional
         Path to the folder to store eisd outputs.
         
     ncores : int, optional

@@ -16,7 +16,7 @@ import argparse
 import sys
 
 from xeisd import __version__, log
-from xeisd.clis import cli_optimize, cli_score
+from xeisd.clis import cli_optimize, cli_score, cli_subset
 from xeisd.libs import libcli
 from xeisd.logger import S
 
@@ -29,6 +29,7 @@ description = f"""
 Core functions:
     * {cli_score._name}
     * {cli_optimize._name}
+    * {cli_subset._name}
 """
 
 ap = libcli.CustomParser(
@@ -47,6 +48,7 @@ subparsers = ap.add_subparsers(
 
 libcli.add_subparser(subparsers, cli_score)
 libcli.add_subparser(subparsers, cli_optimize)
+libcli.add_subparser(subparsers, cli_subset)
 
 
 def load_args():
