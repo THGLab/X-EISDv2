@@ -2,6 +2,9 @@
 Changelog
 =========
 
+v0.1.0 (2023-01-27)
+------------------------------------------------------------
+
 * Subsetting subclient to create optimized ensembles from indices results
 
 v0.0.10 (2023-01-27)
