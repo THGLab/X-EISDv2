@@ -232,6 +232,20 @@ def add_argument_ncores(parser):
         )
 
 
+def add_argument_random_seed(parser):
+    """Add argument to select a random seed number."""
+    parser.add_argument(
+        '-rs',
+        '--random-seed',
+        help=(
+            'Define a random seed number for reproducibility. '
+            'Defaults to 0.'
+            ),
+        default=0,
+        type=int,
+        )
+
+
 def add_argument_output(parser):
     """Add argument for general output string."""
     parser.add_argument(

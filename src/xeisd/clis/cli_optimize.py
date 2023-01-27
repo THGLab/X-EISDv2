@@ -45,6 +45,7 @@ best J-coupling scores.
 import argparse
 import json
 import shutil
+from functools import partial
 
 import pandas as pd
 from idpconfgen.libs.libio import (
@@ -52,6 +53,7 @@ from idpconfgen.libs.libio import (
     make_folder_or_cwd,
     read_path_bundle,
     )
+from idpconfgen.libs.libmulticore import pool_function
 from idpconfgen.libs.libstructure import Structure
 from natsort import os_sorted
 
@@ -77,7 +79,7 @@ from xeisd.components.helper import (
 from xeisd.components.optimizer import XEISD
 from xeisd.components.parser import parse_bc_errors, parse_data
 from xeisd.libs import libcli
-from xeisd.logger import S, T, init_files
+from xeisd.logger import S, T, init_files, report_on_crash
 
 
 LOGFILESNAME = '.xeisd_optimize'
@@ -138,6 +140,9 @@ ap.add_argument(
 
 libcli.add_argument_output_folder(ap)
 libcli.add_argument_ncores(ap)
+libcli.add_argument_random_seed(ap)
+
+RANDOMSEEDS = []
 
 ap.add_argument(
     '--tmpdir',
@@ -156,6 +161,7 @@ def main(
         nres,
         final_confs,
         epochs,
+        random_seed=0,
         output_folder=None,
         mode=opt_max,
         num_exchange=100,
@@ -197,6 +203,10 @@ def main(
         Number of workers to use for multiprocessing.
         Defaults to 1.
     
+    random_seed : int, optional
+        Random seed for multiprocessing and reproducibility.
+        Defaults to 0.
+    
     num_exchange : int, optional
         Number of conformer exchange attempts.
         Defaults to 100.
@@ -217,6 +227,11 @@ def main(
             "the total number of conformers in your ensemble."
             )
         return
+
+    # create different random seeds for the different cores
+    # seeds created to the cores based on main seed are predictable
+    for i in range(epochs):
+        RANDOMSEEDS.append((i, random_seed + i))
     
     output_folder = make_folder_or_cwd(output_folder)
     init_files(log, Path(output_folder, LOGFILESNAME))
@@ -345,28 +360,40 @@ def main(
     
     eisd_ens = XEISD(exp_data, back_data, nres, nconfs)
     log.info(T('Starting Optimization Function'))
-    results, header, indices, best_jcoups = \
-        eisd_ens.optimize(
-            epochs=epochs,
-            final_size=final_confs,
-            opt_type=mode,
-            beta=mc_beta,
-            iters=num_exchange,
-            )
 
-    pd.DataFrame(results).to_csv(
+    final_results = []
+    final_indices = []
+    final_best_jcoups = []
+
+    execute = partial(
+        report_on_crash,
+        eisd_ens.optimize,
+        final_size=final_confs,
+        opt_type=mode,
+        beta=mc_beta,
+        iters=num_exchange,
+        )
+    execute_pool = pool_function(execute, RANDOMSEEDS, method='imap', ncores=ncores)  # noqa: E501
+    
+    for result in execute_pool:
+        header = result[0]
+        final_results.append(result[1])
+        final_indices.append(result[2])
+        final_best_jcoups.append(result[3])
+
+    pd.DataFrame(final_results).to_csv(
         Path(output_folder, 'results.csv'),
         index=False,
         header=header
         )
-    pd.DataFrame(indices).to_csv(
+    pd.DataFrame(final_indices).to_csv(
         Path(output_folder, 'indices.csv'),
         index=False,
         header=False
         )
     
     if jc_name in filenames[parse_mode_exp]:
-        pd.DataFrame(best_jcoups).to_csv(
+        pd.DataFrame(final_best_jcoups).to_csv(
             Path(output_folder, 'best_jcoups.csv'),
             index=False,
             header=False
