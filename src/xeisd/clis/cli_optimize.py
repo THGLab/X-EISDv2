@@ -53,6 +53,7 @@ from idpconfgen.libs.libio import (
     read_path_bundle,
     )
 from idpconfgen.libs.libstructure import Structure
+from natsort import os_sorted
 
 from xeisd import Path, log
 from xeisd.components import (
@@ -239,7 +240,7 @@ def main(
         log.info(S('done'))
         
         nconfs = len(pdbs2operate)
-        
+        pdbs2operate = os_sorted(pdbs2operate)
         s = Structure(pdbs2operate[0])
         s.build()
         nres = len(s.residues)
