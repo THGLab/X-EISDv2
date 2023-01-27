@@ -275,5 +275,8 @@ class XEISD(object):
         result_header = ['index', 'accepts']
         for prop in flags:
             result_header.extend([prop+'_rmsd', prop+'_score'])
-            
-        return result_header, s, indices, old_scores[jc_name][2]
+        
+        if jc_name in flags:
+            return result_header, s, indices, old_scores[jc_name][2]
+        else:
+            return result_header, s, indices

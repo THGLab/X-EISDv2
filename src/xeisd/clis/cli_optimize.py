@@ -379,7 +379,8 @@ def main(
         header = result[0]
         final_results.append(result[1])
         final_indices.append(result[2])
-        final_best_jcoups.append(result[3])
+        if jc_name in filenames[parse_mode_exp]:
+            final_best_jcoups.append(result[3])
 
     pd.DataFrame(final_results).to_csv(
         Path(output_folder, 'results.csv'),
