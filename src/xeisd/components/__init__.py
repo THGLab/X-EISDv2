@@ -87,6 +87,21 @@ XEISD_TITLE = (
     )
 
 
+def add_optimization_mode(parser):
+    """Add option to choose from optimization methods."""
+    parser.add_argument(
+        '-m',
+        '--mode',
+        help=(
+            'Optimization mode. Could be Metropolis Monte Carlo (mc) '
+            'or score maximization method (max).'
+            'Defaults to max.'
+            ),
+        default=opt_max,
+        choices=tuple((opt_max, opt_mc)),
+        )
+
+
 # The following two functions have been imported from:
 # https://github.com/THGLab/X-EISD/blob/master/eisd/utils/miscell.py
 # https://github.com/Oufan75/X-EISD/blob/master/eisd/utils.py

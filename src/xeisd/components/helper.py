@@ -144,9 +144,9 @@ def selective_calculator(
         # add more `elif` statements as we test more modules
         
         if exp == saxs_name or exp == cs_name:
-            execute_pool = pool_function(execute, str_pdbfp, ncores=ncores)
+            execute_pool = pool_function(execute, str_pdbfp, method='imap', ncores=ncores)  # noqa: E501
         else:
-            execute_pool = pool_function(execute, pdbfilepaths, ncores=ncores)
+            execute_pool = pool_function(execute, pdbfilepaths, method='imap', ncores=ncores)  # noqa: E501
         
         for result in execute_pool:
             if exp == saxs_name:

@@ -232,6 +232,20 @@ def add_argument_ncores(parser):
         )
 
 
+def add_argument_random_seed(parser):
+    """Add argument to select a random seed number."""
+    parser.add_argument(
+        '-rs',
+        '--random-seed',
+        help=(
+            'Define a random seed number for reproducibility. '
+            'Defaults to 0.'
+            ),
+        default=0,
+        type=int,
+        )
+
+
 def add_argument_output(parser):
     """Add argument for general output string."""
     parser.add_argument(
@@ -245,6 +259,21 @@ def add_argument_output(parser):
             ),
         type=str,
         default='output.json',
+        )
+
+
+def add_argument_output_folder(parser):
+    """Add argument for general output string."""
+    parser.add_argument(
+        '-of',
+        '--output-folder',
+        help=(
+            "The folder where to save the output. "
+            "NOTE: if new files have the same name of old files in the "
+            "folder, new files will replace old files."
+            ),
+        type=str,
+        default=None,
         )
 
 
