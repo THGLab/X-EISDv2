@@ -2,6 +2,8 @@
 Changelog
 =========
 
+* Fix scoring and optimization in Rh module
+
 v0.1.0 (2023-01-27)
 ------------------------------------------------------------
 

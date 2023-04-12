@@ -60,7 +60,7 @@ CUSTOM format:
     NOE: index,value,lower,upper,error*
     PRE: index,value,lower,upper,error*
     RDC: index,resnum,value,error
-    Rh: index,resnum,value,error
+    Rh: index,value,error
     
     For NOE and PRE, error* can be provided instead of lower+upper.
     
