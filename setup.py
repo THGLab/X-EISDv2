@@ -36,7 +36,7 @@ long_description = '{}\n{}'.format(
 
 setup(
     name='xeisd',
-    version='0.1.0',
+    version='0.1.1',
     description='A skeleton template for Python projects.',
     long_description=long_description,
     long_description_content_type='text/x-rst',
