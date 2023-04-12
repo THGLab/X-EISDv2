@@ -459,8 +459,8 @@ def rh_optimization_ensemble(
         ):
     """Logic for Rh scoring module."""
     # prepare data
-    exp = exp_data[rh_name].data
-    exp_sigma = exp_data[rh_name].sigma
+    exp = exp_data[rh_name].data[exp_val].values
+    exp_sigma = exp_data[rh_name].data[exp_err].values
 
     if indices is None:
         bc = old_vals - (bc_data[rh_name].data.values[popped_structure, :] - bc_data[rh_name].data.values[new_index, :]) / ens_size  # noqa: E501
