@@ -2,6 +2,8 @@
 Changelog
 =========
 
+* Fix bug associated with experimental error not recognized in optmize module for Rh and FRET modules
+
 v0.1.1 (2023-04-12)
 ------------------------------------------------------------
 
