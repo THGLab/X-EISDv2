@@ -2,7 +2,7 @@
 Changelog
 =========
 
-* Fix bug associated with experimental error not recognized in optmize module for Rh and FRET modules
+* Fix bug associated with old numpy version
 
 v0.1.1 (2023-04-12)
 ------------------------------------------------------------
