@@ -2,6 +2,8 @@
 Changelog
 =========
 
+* Fix bug associated with old numpy version
+
 v0.1.1 (2023-04-12)
 ------------------------------------------------------------
 
