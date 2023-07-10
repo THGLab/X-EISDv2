@@ -278,7 +278,7 @@ def parse_data(filenames, mode, bc_errors=default_bc_errors):
     """
     parsed = {}
     errlogs = []
-    data = pd.DataFrame(dtype=np.float)
+    data = pd.DataFrame(dtype=float)
     
     # Parse experimental data
     if mode == parse_mode_exp:
