@@ -49,7 +49,6 @@ import shutil
 from functools import partial
 
 import pandas as pd
-
 from idpconfgen.libs.libio import (
     extract_from_tar,
     make_folder_or_cwd,
@@ -74,10 +73,10 @@ from xeisd.components import (
     parse_mode_exp,
     saxs_name,
     )
-#from xeisd.components.helper import (
-#    return_indices_of_bc_saxs,
-#    selective_calculator,
-#    )
+from xeisd.components.helper import (
+    return_indices_of_bc_saxs,
+    selective_calculator,
+    )
 from xeisd.components.optimizer import XEISD
 from xeisd.components.parser import parse_bc_errors, parse_data
 from xeisd.libs import libcli
@@ -235,7 +234,7 @@ def main(
     for i in range(epochs):
         RANDOMSEEDS.append((i, random_seed + i))
     
-    output_folder = "./"#make_folder_or_cwd(output_folder)
+    output_folder = make_folder_or_cwd(output_folder)
     init_files(log, Path(output_folder, LOGFILESNAME))
     
     # Sets back-calculator errors
@@ -383,7 +382,6 @@ def main(
         final_indices.append(result[2])
         if jc_name in filenames[parse_mode_exp]:
             final_best_jcoups.append(result[3])
-
 
     pd.DataFrame(final_results).to_csv(
         Path(output_folder, 'results.csv'),

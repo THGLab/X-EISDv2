@@ -72,7 +72,6 @@ CUSTOM format:
 import ast
 import json
 
-import numpy as np
 import pandas as pd
 
 from xeisd.components import (
