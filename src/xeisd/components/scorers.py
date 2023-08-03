@@ -230,7 +230,6 @@ def cs_optimization_ensemble(
     return rmse, total_score, bc_cs, error
 
 
-# NOTE: scoring may change depends on what we hear from Gradinaru group
 def fret_optimization_ensemble(
         exp_data,
         bc_data,
@@ -244,8 +243,7 @@ def fret_optimization_ensemble(
     # prepare data
     exp = exp_data[fret_name].data[exp_val].values
     exp_sigma = exp_data[fret_name].data[exp_err].values
-
-    # NOTE: watch out for 2D dataframe here
+    
     if indices is None:
         bc = old_vals - \
             (bc_data[fret_name].data.values[popped_structure, :] - bc_data[fret_name].data.values[new_index, :]) / ens_size  # noqa: E501
@@ -461,7 +459,7 @@ def rh_optimization_ensemble(
     # prepare data
     exp = exp_data[rh_name].data[exp_val].values
     exp_sigma = exp_data[rh_name].data[exp_err].values
-
+ 
     if indices is None:
         bc = old_vals - (bc_data[rh_name].data.values[popped_structure, :] - bc_data[rh_name].data.values[new_index, :]) / ens_size  # noqa: E501
     else:
@@ -469,7 +467,7 @@ def rh_optimization_ensemble(
         bc = np.mean(bc_ensemble, axis=0)
 
     bc_sigma = bc_data[rh_name].sigma
-
+   
     # optimization
     opt_params = calc_opt_params(bc, exp, exp_sigma, bc_sigma)
     f, f_comps = calc_score(bc, exp, exp_sigma, bc_sigma, opt_params)

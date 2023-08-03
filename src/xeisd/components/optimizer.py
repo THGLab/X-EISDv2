@@ -37,14 +37,14 @@ class XEISD(object):
         Back calculation data Stack
     nres : int
         Number of residues per conformer
-    ens_size : int
+    pool_size : int
         Number of candidate conformers.
     """
-    def __init__(self, exp_data, bc_data, nres, ens_size):
+    def __init__(self, exp_data, bc_data, nres, pool_size):
         self.exp_data = exp_data
         self.bc_data = bc_data
         self.resnum = nres
-        self.ens_size = ens_size
+        self.pool_size = pool_size
 
 
     def calc_scores(self, dtypes, ens_size, indices=None):
@@ -72,7 +72,7 @@ class XEISD(object):
             List of [rmse, score, avg_bc_data]
         '''
         if indices is None:
-            indices = np.random.choice(np.arange(self.ens_size), ens_size, replace=False)
+            indices = np.random.choice(np.arange(self.pool_size), ens_size, replace=False)
         
         # The first 3 items list[:3] is taken as the "rmse", "score", "back-calculation"
         # last "error" return is not used for X-EISD
@@ -164,15 +164,14 @@ class XEISD(object):
         # switch the property
         flags = modes(mode, self.exp_data.keys())
         
-        ens_size = self.ens_size
-        assert final_size < ens_size
+        assert final_size < self.pool_size
 
         old_scores = {}
 
         # initial scores
-        indices = list(np.random.choice(np.arange(self.ens_size), final_size, replace=False))
+        indices = list(np.random.choice(np.arange(self.pool_size), final_size, replace=False))
         for key in flags:
-            old_scores[key] = self.calc_scores(key, ens_size, indices)[1]
+            old_scores[key] = self.calc_scores(key, final_size, indices)[1]
         new_scores = {}
         for name in flags:
             new_scores[name] = [0, 0, 0]
@@ -186,7 +185,7 @@ class XEISD(object):
             indices.pop(pop_index)
             struct_found = False
             while not struct_found:
-                new_index = np.random.randint(0, self.ens_size, 1)[0]
+                new_index = np.random.randint(0, self.pool_size, 1)[0]
                 if new_index != popped_structure and new_index not in indices:
                     indices.append(new_index)
                     struct_found = True
@@ -195,44 +194,44 @@ class XEISD(object):
                     if prop == saxs_name:
                         new_scores[saxs_name] = \
                             list(saxs_optimization_ensemble(self.exp_data, 
-                            self.bc_data, None, ens_size, self.resnum,
+                            self.bc_data, None, final_size, self.resnum,
                             old_scores[saxs_name][2], popped_structure, new_index))[:3]
                     if prop == cs_name:
                         new_scores[cs_name] = \
                             list(cs_optimization_ensemble(self.exp_data, 
-                            self.bc_data, ens_size, None, old_scores[cs_name][2],
+                            self.bc_data, final_size, None, old_scores[cs_name][2],
                             popped_structure, new_index))[:3]
                     if prop == fret_name:
                         new_scores[fret_name] = \
                             list(fret_optimization_ensemble(self.exp_data, 
-                            self.bc_data, ens_size, None, old_scores[fret_name][2],
+                            self.bc_data, final_size, None, old_scores[fret_name][2],
                             popped_structure, new_index))[:3]
                     if prop == jc_name:
                         new_scores[jc_name] = \
                             list(jc_optimization_ensemble(self.exp_data, 
-                            self.bc_data, ens_size, None, old_scores[jc_name][3],
+                            self.bc_data, final_size, None, old_scores[jc_name][3],
                             popped_structure, new_index))
                     if prop == noe_name:
                         new_scores[noe_name] = \
                             list(noe_optimization_ensemble(self.exp_data, 
-                            self.bc_data, ens_size, None, old_scores[noe_name][2],
+                            self.bc_data, final_size, None, old_scores[noe_name][2],
                             popped_structure, new_index))[:3]
 
                     if prop == pre_name:
                         new_scores[pre_name] = \
                             list(pre_optimization_ensemble(self.exp_data, 
-                            self.bc_data, ens_size, None, old_scores[pre_name][2],
+                            self.bc_data, final_size, None, old_scores[pre_name][2],
                             popped_structure, new_index))[:3]
                     if prop == rdc_name:
                         new_scores[rdc_name] = \
                             list(rdc_optimization_ensemble(self.exp_data, 
-                            self.bc_data, ens_size, None, old_scores[rdc_name][2],
+                            self.bc_data, final_size, None, old_scores[rdc_name][2],
                             popped_structure, new_index))[:3]
                             
                     if prop == rh_name:
                         new_scores[rh_name] \
                             = list(rh_optimization_ensemble(self.exp_data, 
-                            self.bc_data, ens_size, None, old_scores[rh_name][2],
+                            self.bc_data, final_size, None, old_scores[rh_name][2],
                             popped_structure, new_index))[:3]
         
             old_total_score = np.sum([old_scores[key][1] for key in old_scores])
@@ -256,19 +255,25 @@ class XEISD(object):
             if not flags[prop]:
                 if prop == pre_name:
                     old_scores[pre_name][:2] = \
-                        pre_optimization_ensemble(self.exp_data, self.bc_data, ens_size, indices)[:2]
+                        pre_optimization_ensemble(self.exp_data, self.bc_data, final_size, indices)[:2]
                 if prop == jc_name:
                     old_scores[jc_name][:2] = \
-                        jc_optimization_ensemble(self.exp_data, self.bc_data, ens_size, indices)[:2]
+                        jc_optimization_ensemble(self.exp_data, self.bc_data, final_size, indices)[:2]
                 if prop == cs_name:
                     old_scores[cs_name][:2] = \
-                        cs_optimization_ensemble(self.exp_data, self.bc_data, ens_size, indices)[:2]
+                        cs_optimization_ensemble(self.exp_data, self.bc_data, final_size, indices)[:2]
                 if prop == fret_name:
                     old_scores[fret_name][:2] = \
-                        fret_optimization_ensemble(self.exp_data, self.bc_data, ens_size, indices)[:2]
+                        fret_optimization_ensemble(self.exp_data, self.bc_data, final_size, indices)[:2]
+                if prop == rh_name:
+                    old_scores[rh_name][:2] = \
+                        rh_optimization_ensemble(self.exp_data, self.bc_data, final_size, indices)[:2]
+                if prop == rdc_name:
+                    old_scores[rdc_name][:2] = \
+                        rdc_optimization_ensemble(self.exp_data, self.bc_data, final_size, indices)[:2]
                 if prop == saxs_name:
                     old_scores[saxs_name][:2] = \
-                        saxs_optimization_ensemble(self.exp_data, self.bc_data, indices, ens_size, self.resnum)[:2]  # noqa: E501
+                        saxs_optimization_ensemble(self.exp_data, self.bc_data, indices, final_size, self.resnum)[:2]  # noqa: E501
             # aggregate results
             s.extend(old_scores[prop][:2])
         

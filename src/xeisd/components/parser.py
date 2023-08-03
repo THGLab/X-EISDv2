@@ -316,17 +316,12 @@ def parse_data(filenames, mode, bc_errors=default_bc_errors):
     else:
         for module in filenames:
             try:
-                lists = []
                 with open(filenames[module], 'r') as f:
-                    raw = json.loads(f.read())
-                    raw.pop('format', None)
-                    # For each module, the data will be a list of lists
-                    # think each column is a conformer and each row is
-                    # the value associated for a residue already aligned with
-                    # experimental values
-                    for conf in raw:
-                        lists.append(raw[conf])
-                data = pd.DataFrame(lists)
+                    raw = json.load(f)
+                if isinstance(list(raw.items())[0][1], float):
+                    data = pd.DataFrame(raw, index=[0]).T
+                else:
+                    data = pd.DataFrame(raw).T
                 # assign mu value for JC back-calculations
                 if module == jc_name:
                     parsed[module] = \
