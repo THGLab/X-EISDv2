@@ -1,5 +1,0 @@
-[2023-08-03 01:05:02,724]cli_optimize.py:xeisd:main:266: Checking Experimental And Back-Calculation Data Files:
-[2023-08-03 01:05:02,726]cli_optimize.py:xeisd:main:274:     done
-[2023-08-03 01:05:02,726]cli_optimize.py:xeisd:main:277: Parsing Experimental And Back-Calculated Files:
-[2023-08-03 01:05:02,987]cli_optimize.py:xeisd:main:294:     done
-[2023-08-03 01:05:02,987]cli_optimize.py:xeisd:main:364: Starting Optimization Function:
