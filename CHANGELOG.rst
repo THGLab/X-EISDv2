@@ -2,7 +2,7 @@
 Changelog
 =========
 
-* Clean and linting
+* Restore CLI capabilities and linting
 
 v0.1.3 (2023-08-03)
 ------------------------------------------------------------
