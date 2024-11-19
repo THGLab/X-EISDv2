@@ -68,8 +68,8 @@ default_bc_errors = {
     fret_name: 0.0074,
     rh_name: 0.812,
     rdc_name: 0.88,
-    # cs error reported from UCBShift
-    cs_name: {'C': 1.31, 'CA': 0.97, 'CB': 1.29, 'H': 0.38, 'HA': 0.29},
+    # cs error reported from UCBShift, units are in ppm
+    cs_name: {'C': 0.84, 'CA': 0.81, 'CB': 1.00, 'H': 0.31, 'HA': 0.19, 'N': 1.81},  # noqa: E501
     jc_name: {'A': np.sqrt(0.14), 'B': np.sqrt(0.03), 'C': np.sqrt(0.08)},
     }
 jc_bc_mu = {'A': 6.51, 'B': -1.76, 'C': 1.6}
