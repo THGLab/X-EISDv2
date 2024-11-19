@@ -2,6 +2,8 @@
 Changelog
 =========
 
+* Update default chemical shift back-calculator errors to the ones referred to in 10.1039/C9SC06561J
+
 v0.1.4 (2023-08-03)
 ------------------------------------------------------------
 

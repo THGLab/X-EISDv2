@@ -286,7 +286,7 @@ def main(
             "score": result[1][score_idx],
             "avg_bc_value": result[1][avg_bc_idx],
             }
-        if type(_output[result[0]]["avg_bc_value"]) != list:
+        if type(_output[result[0]]["avg_bc_value"]) is not list:
             _output[result[0]]["avg_bc_value"] = \
                 _output[result[0]]["avg_bc_value"].tolist()
     log.info(S('done'))
