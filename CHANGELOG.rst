@@ -2,6 +2,9 @@
 Changelog
 =========
 
+v0.2.0 (2025-01-15)
+------------------------------------------------------------
+
 * Update syntax for NOE and PRE experimental values from ``value`` to ``dist_value``
 
 v0.1.5 (2024-11-19)
