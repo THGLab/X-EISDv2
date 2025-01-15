@@ -18,6 +18,7 @@ from xeisd.components import (
     exp_idx,
     exp_resnum,
     exp_val,
+    exp_dist_val,
     fret_name,
     jc_bc_mu,
     jc_name,

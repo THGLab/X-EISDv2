@@ -9,6 +9,7 @@ import numpy as np
 exp_idx = 'index'
 exp_resnum = 'resnum'
 exp_val = 'value'
+exp_dist_val = 'dist_value'
 exp_max = 'upper'
 exp_atmID = 'atomname'
 exp_min = 'lower'

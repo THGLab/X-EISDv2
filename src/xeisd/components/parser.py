@@ -83,6 +83,7 @@ from xeisd.components import (
     exp_max,
     exp_min,
     exp_val,
+    exp_dist_val,
     fret_name,
     jc_bc_mu,
     jc_name,
@@ -218,7 +219,7 @@ def parse_nmrstar_data(fpath, type=None):
                 lower.append(float(min))
     
     if type == noe_name or type == pre_name:
-        return pd.DataFrame({exp_idx: index, exp_val: values, exp_max: upper, exp_min: lower, exp_err: errors})  # noqa: E501
+        return pd.DataFrame({exp_idx: index, exp_dist_val: values, exp_max: upper, exp_min: lower, exp_err: errors})  # noqa: E501
     return pd.DataFrame({exp_idx: index, exp_val: values, exp_err: errors})
 
 
