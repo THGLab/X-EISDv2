@@ -318,6 +318,8 @@ def parse_data(filenames, mode, bc_errors=default_bc_errors):
             try:
                 with open(filenames[module], 'r') as f:
                     raw = json.load(f)
+                if module == pre_name or module == noe_name:
+                    del raw['format']
                 if isinstance(list(raw.items())[0][1], float):
                     data = pd.DataFrame(raw, index=[0]).T
                 else:
