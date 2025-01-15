@@ -10,12 +10,12 @@ import numpy as np
 from xeisd.components import (
     cs_name,
     exp_atmID,
+    exp_dist_val,
     exp_err,
     exp_idx,
     exp_max,
     exp_min,
     exp_val,
-    exp_dist_val,
     fret_name,
     jc_name,
     noe_name,
