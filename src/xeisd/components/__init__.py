@@ -9,6 +9,7 @@ import numpy as np
 exp_idx = 'index'
 exp_resnum = 'resnum'
 exp_val = 'value'
+exp_dist_val = 'dist_value'
 exp_max = 'upper'
 exp_atmID = 'atomname'
 exp_min = 'lower'
@@ -80,9 +81,9 @@ avg_bc_idx = 2
 
 XEISD_TITLE = (
     "\n _  _     ____  ____  ___  ____  \n"  # noqa: W605
-    "( \/ )___( ___)(_  _)/ __)(  _ \ \n"  # noqa: W605
-    " )  ((___))__)  _)(_ \__ \ )(_) )\n"  # noqa: W605
-    "(_/\_)   (____)(____)(___/(____/ \n"  # noqa: W605
+    "( \\/ )___( ___)(_  _)/ __)(  _ \\ \n"  # noqa: W605
+    " )  ((___))__)  _)(_ \\__ \\ )(_) )\n"  # noqa: W605
+    "(_/\\_)   (____)(____)(___/(____/ \n"  # noqa: W605
     "================================="
     )
 

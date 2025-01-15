@@ -10,6 +10,7 @@ import numpy as np
 from xeisd.components import (
     cs_name,
     exp_atmID,
+    exp_dist_val,
     exp_err,
     exp_idx,
     exp_max,
@@ -332,7 +333,7 @@ def noe_optimization_ensemble(
         new_index=None,
         ):
     """Logic for NOE scoring."""
-    exp_distance = exp_data[noe_name].data[exp_val].values
+    exp_distance = exp_data[noe_name].data[exp_dist_val].values
     
     # Either `upper,lower` or `error` is required for exp_sigma
     try:
@@ -380,7 +381,7 @@ def pre_optimization_ensemble(
         ):
     """Logic for PRE scoring function."""
     # prepare data
-    exp_distance = exp_data[pre_name].data[exp_val].values
+    exp_distance = exp_data[pre_name].data[exp_dist_val].values
     # Either `upper,lower` or `error` is required for exp_sigma
     try:
         upper_bound_value = exp_data[pre_name].data[exp_max].values

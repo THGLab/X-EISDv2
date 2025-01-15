@@ -78,6 +78,7 @@ from xeisd.components import (
     cs_name,
     default_bc_errors,
     exp_atmID,
+    exp_dist_val,
     exp_err,
     exp_idx,
     exp_max,
@@ -218,7 +219,7 @@ def parse_nmrstar_data(fpath, type=None):
                 lower.append(float(min))
     
     if type == noe_name or type == pre_name:
-        return pd.DataFrame({exp_idx: index, exp_val: values, exp_max: upper, exp_min: lower, exp_err: errors})  # noqa: E501
+        return pd.DataFrame({exp_idx: index, exp_dist_val: values, exp_max: upper, exp_min: lower, exp_err: errors})  # noqa: E501
     return pd.DataFrame({exp_idx: index, exp_val: values, exp_err: errors})
 
 
@@ -317,6 +318,8 @@ def parse_data(filenames, mode, bc_errors=default_bc_errors):
             try:
                 with open(filenames[module], 'r') as f:
                     raw = json.load(f)
+                if module == pre_name or module == noe_name:
+                    del raw['format']
                 if isinstance(list(raw.items())[0][1], float):
                     data = pd.DataFrame(raw, index=[0]).T
                 else:
