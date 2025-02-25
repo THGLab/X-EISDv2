@@ -2,6 +2,9 @@
 Changelog
 =========
 
+v0.2.1 (2025-02-25)
+------------------------------------------------------------
+
 * Overhaul of normal-loglike function for better error checking
 * Switch score and RMSE calculations to ignore NaN values
 
