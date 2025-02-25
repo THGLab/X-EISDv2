@@ -35,16 +35,43 @@ def calc_opt_params(beta, exp, exp_sig, sig):
     return opt_params
 
 
-def normal_loglike(x, mu, sig, gamma=1.0):
-    """Perform normal loglike calculation."""
-    # Allow for cases where one/more sig are zero
-    # all assigned to zero for now
-    # modified by Oufan Zhang @Oufan75
-    logp = np.zeros(x.shape)
-    if not np.any(sig == 0):
-        exp_val = -gamma * ((x - mu) ** 2.0) / (2.0 * (sig ** 2.0))
-        pre_exp = 1.0 / (np.sqrt(2.0 * np.pi * (sig ** 2.0)))
-        logp = np.log(pre_exp * np.exp(exp_val))
+def normal_loglike(x, mu, sig, gamma=1.0, eps=1e-10, min_val=1e-300):
+    """Perform normal log-likelihood calculation with numerical stability."""
+    x = np.asarray(x)
+    mu = np.asarray(mu)
+    sig = np.asarray(sig)
+
+    # If mu and sig are scalars, handle them without indexing
+    if mu.ndim == 0 and sig.ndim == 0:  
+        if sig == 0:
+            return np.full(x.shape, -np.inf)  # Assign -inf if sigma is zero
+
+        exp_val = -gamma * ((x - mu) ** 2.0) / (2.0 * ((sig ** 2.0) + eps))
+        pre_exp = 1.0 / (np.sqrt(2.0 * np.pi * ((sig ** 2.0) + eps)))
+        result = pre_exp * np.exp(exp_val)
+        
+        # Apply min_val threshold to avoid log(0)
+        result = np.maximum(result, min_val)
+        return np.log(result)
+    
+    # Ensure mu and sig match x's shape for vectorized operations
+    if mu.shape != x.shape:
+        mu = np.full_like(x, mu)
+    if sig.shape != x.shape:
+        sig = np.full_like(x, sig)
+
+    logp = np.full(x.shape, -np.inf)  # Default to -inf for invalid cases
+    valid_mask = sig > 0  # Avoid division by zero
+
+    if np.any(valid_mask):
+        exp_val = -gamma * ((x[valid_mask] - mu[valid_mask]) ** 2.0) / (2.0 * ((sig[valid_mask] ** 2.0) + eps))
+        pre_exp = 1.0 / (np.sqrt(2.0 * np.pi * ((sig[valid_mask] ** 2.0) + eps)))
+        result = pre_exp * np.exp(exp_val)
+        
+        # Apply min_val threshold to avoid log(0)
+        result = np.maximum(result, min_val)
+        logp[valid_mask] = np.log(result)
+
     return logp
 
 
@@ -171,8 +198,8 @@ def saxs_optimization_ensemble(
     f, f_comps = calc_score(bc_saxs, exp_saxs, exp_sigma, bc_data[saxs_name].sigma, opt_params, gamma=g)  # noqa: E501
 
     error = (exp_saxs - bc_saxs) ** 2
-    rmse = np.mean(error) ** 0.5
-    total_score = np.sum(f)
+    rmse = np.nanmean(error) ** 0.5
+    total_score = np.nansum(f)
     
     return rmse, total_score, bc_saxs, error
 
@@ -225,8 +252,8 @@ def cs_optimization_ensemble(
     f, f_comps = calc_score(bc_cs, exp_cs, exp_sigma, bc_sigma, opt_params)
     
     error = (exp_cs - bc_cs) ** 2.0
-    rmse = np.mean(error) ** 0.5
-    total_score = np.sum(f)
+    rmse = np.nanmean(error) ** 0.5
+    total_score = np.nansum(f)
     
     return rmse, total_score, bc_cs, error
 
@@ -259,8 +286,8 @@ def fret_optimization_ensemble(
     f, f_comps = calc_score(bc, exp, exp_sigma, bc_sigma, opt_params)
 
     error = (exp - bc) ** 2.0
-    rmse = np.mean(error) ** 0.5
-    total_score = np.sum(f)
+    rmse = np.nanmean(error) ** 0.5
+    total_score = np.nansum(f)
 
     return rmse, total_score, bc, error
 
@@ -316,8 +343,8 @@ def jc_optimization_ensemble(
         )
     
     error = (opt_params[:, 0] * bc_alpha2 + opt_params[:, 1] * bc_alpha1 + opt_params[:, 2] - exp) ** 2.0  # noqa: E501
-    rmse = np.mean(error) ** 0.5
-    scores = np.sum(f)
+    rmse = np.nanmean(error) ** 0.5
+    scores = np.nansum(f)
     jcoup_vals = list(opt_params[:, 0] * bc_alpha2 + opt_params[:, 1] * bc_alpha1 + opt_params[:, 2])  # noqa: E501
 
     return rmse, scores, jcoup_vals, [bc_alpha1, bc_alpha2]
@@ -364,8 +391,8 @@ def noe_optimization_ensemble(
     f, f_comps = calc_score(avg_distance, exp_distance, exp_sigma, bc_data[noe_name].sigma, opt_params)  # noqa: E501
     
     error = (exp_distance - avg_distance) ** 2.0
-    rmse = np.mean(error) ** 0.5
-    total_score = np.sum(f)
+    rmse = np.nanmean(error) ** 0.5
+    total_score = np.nansum(f)
     
     return rmse, total_score, avg_distance, error
 
@@ -408,8 +435,8 @@ def pre_optimization_ensemble(
     f, f_comps = calc_score(avg_distance, exp_distance, exp_sigma, bc_data[pre_name].sigma, opt_params)  # noqa: E501
     
     error = (exp_distance - avg_distance) ** 2.0
-    rmse = np.mean(error) ** 0.5
-    total_score = np.sum(f)
+    rmse = np.nanmean(error) ** 0.5
+    total_score = np.nansum(f)
     
     return rmse, total_score, avg_distance, error
 
@@ -441,8 +468,8 @@ def rdc_optimization_ensemble(
     f, f_comps = calc_score(bc, exp, exp_sigma, bc_data[rdc_name].sigma, opt_params)  # noqa: E501
     
     error = (exp - bc) ** 2.0
-    rmse = np.mean(error) ** 0.5
-    total_score = np.sum(f)
+    rmse = np.nanmean(error) ** 0.5
+    total_score = np.nansum(f)
 
     return rmse, total_score, bc, error
 
@@ -474,7 +501,7 @@ def rh_optimization_ensemble(
     f, f_comps = calc_score(bc, exp, exp_sigma, bc_sigma, opt_params)
     
     error = (exp - bc) ** 2.0
-    rmse = np.mean(error) ** 0.5
-    total_score = np.sum(f)
+    rmse = np.nanmean(error) ** 0.5
+    total_score = np.nansum(f)
 
     return rmse, total_score, bc[0], error
