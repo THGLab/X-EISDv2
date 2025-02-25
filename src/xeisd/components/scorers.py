@@ -42,7 +42,7 @@ def normal_loglike(x, mu, sig, gamma=1.0, eps=1e-10, min_val=1e-300):
     sig = np.asarray(sig)
 
     # If mu and sig are scalars, handle them without indexing
-    if mu.ndim == 0 and sig.ndim == 0:  
+    if mu.ndim == 0 and sig.ndim == 0:
         if sig == 0:
             return np.full(x.shape, -np.inf)  # Assign -inf if sigma is zero
 
@@ -64,8 +64,8 @@ def normal_loglike(x, mu, sig, gamma=1.0, eps=1e-10, min_val=1e-300):
     valid_mask = sig > 0  # Avoid division by zero
 
     if np.any(valid_mask):
-        exp_val = -gamma * ((x[valid_mask] - mu[valid_mask]) ** 2.0) / (2.0 * ((sig[valid_mask] ** 2.0) + eps))
-        pre_exp = 1.0 / (np.sqrt(2.0 * np.pi * ((sig[valid_mask] ** 2.0) + eps)))
+        exp_val = -gamma * ((x[valid_mask] - mu[valid_mask]) ** 2.0) / (2.0 * ((sig[valid_mask] ** 2.0) + eps))  # noqa: E501
+        pre_exp = 1.0 / (np.sqrt(2.0 * np.pi * ((sig[valid_mask] ** 2.0) + eps)))  # noqa: E501
         result = pre_exp * np.exp(exp_val)
         
         # Apply min_val threshold to avoid log(0)
@@ -402,6 +402,7 @@ def pre_optimization_ensemble(
         bc_data,
         ens_size,
         indices,
+        pre_ratios=False,
         old_vals=None,
         popped_structure=None,
         new_index=None,
@@ -421,24 +422,44 @@ def pre_optimization_ensemble(
     except ValueError:
         exp_sigma = exp_data[pre_name].data[exp_sigma].values
     
-    if indices is None:
-        popped = np.power(bc_data[pre_name].data.values[popped_structure, :], -6.0)  # noqa: E501
-        added = np.power(bc_data[pre_name].data.values[new_index, :], -6.0)
-        avg_distance = (np.power(old_vals, -6.0) * ens_size - (popped - added)) / ens_size  # noqa: E501
-        avg_distance = np.power(avg_distance, (-1. / 6.))
-    else:
-        bc_ensemble = np.power(bc_data[pre_name].data.values[indices, :], -6.0)
-        avg_distance = np.power(np.mean(bc_ensemble, axis=0), (-1. / 6.))
+    if pre_ratios:
+        if indices is None:
+            bc = old_vals - \
+                (bc_data[pre_name].data.values[popped_structure, :] - bc_data[pre_name].data.values[new_index, :]) / ens_size  # noqa: E501
+        else:
+            bc_ensemble = bc_data[pre_name].data.values[indices, :]
+            bc = np.mean(bc_ensemble, axis=0)
+    
+        bc_sigma = bc_data[pre_name].sigma
     
         # optimization
-    opt_params = calc_opt_params(avg_distance, exp_distance, exp_sigma, bc_data[pre_name].sigma)  # noqa: E501
-    f, f_comps = calc_score(avg_distance, exp_distance, exp_sigma, bc_data[pre_name].sigma, opt_params)  # noqa: E501
+        opt_params = calc_opt_params(bc, exp_distance, exp_sigma, bc_sigma)
+        f, f_comps = calc_score(bc, exp_distance, exp_sigma, bc_sigma, opt_params)  # noqa: E501
     
-    error = (exp_distance - avg_distance) ** 2.0
-    rmse = np.nanmean(error) ** 0.5
-    total_score = np.nansum(f)
-    
-    return rmse, total_score, avg_distance, error
+        error = (exp_distance - bc) ** 2.0
+        rmse = np.nanmean(error) ** 0.5
+        total_score = np.nansum(f)
+
+        return rmse, total_score, bc, error
+    else:
+        if indices is None:
+            popped = np.power(bc_data[pre_name].data.values[popped_structure, :], -6.0)  # noqa: E501
+            added = np.power(bc_data[pre_name].data.values[new_index, :], -6.0)
+            avg_distance = (np.power(old_vals, -6.0) * ens_size - (popped - added)) / ens_size  # noqa: E501
+            avg_distance = np.power(avg_distance, (-1. / 6.))
+        else:
+            bc_ensemble = np.power(bc_data[pre_name].data.values[indices, :], -6.0)  # noqa: E501
+            avg_distance = np.power(np.mean(bc_ensemble, axis=0), (-1. / 6.))
+
+            # optimization
+        opt_params = calc_opt_params(avg_distance, exp_distance, exp_sigma, bc_data[pre_name].sigma)  # noqa: E501
+        f, f_comps = calc_score(avg_distance, exp_distance, exp_sigma, bc_data[pre_name].sigma, opt_params)  # noqa: E501
+
+        error = (exp_distance - avg_distance) ** 2.0
+        rmse = np.nanmean(error) ** 0.5
+        total_score = np.nansum(f)
+
+        return rmse, total_score, avg_distance, error
 
 
 def rdc_optimization_ensemble(
