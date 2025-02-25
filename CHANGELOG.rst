@@ -2,6 +2,8 @@
 Changelog
 =========
 
+* Add option to treat PRE back-calculated data as intensity ratios
+
 v0.2.1 (2025-02-25)
 ------------------------------------------------------------
 
