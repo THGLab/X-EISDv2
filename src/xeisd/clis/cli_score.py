@@ -88,6 +88,15 @@ ap = libcli.CustomParser(
     )
 
 libcli.add_argument_data_files(ap)
+ap.add_argument(
+    '--pre-ratios',
+    help=(
+        'Switch to interpret PRE data as intensity ratios. '
+        'The default interpretation is distances. '
+        'If you want to use ratios instead, please add this flag. '
+        ),
+    action="store_true",
+    )
 libcli.add_argument_pdb_files(ap)
 libcli.add_argument_number_conformers(ap)
 libcli.add_argument_number_residues(ap)
@@ -111,6 +120,7 @@ def main(
         nconfs,
         nres,
         output,
+        pre_ratios=False,
         custom_error=None,
         pdb_files=None,
         ncores=1,
@@ -125,6 +135,10 @@ def main(
     data_files : str or Path, required
         Path to the folder containing experimental and back-calc
         data files.
+    
+    pre_ratios : Bool
+            Whether or not to treat PRE data as intensity ratios.
+            Or defaults to distances.
     
     nconfs : int, required
         Number of conformations in ensemble.
@@ -277,6 +291,7 @@ def main(
         report_on_crash,
         eisd_ens.calc_scores,
         ens_size=nconfs,
+        pre_ratios=pre_ratios,
         )
     execute_pool = pool_function(execute, dtypes, ncores=ncores)
     _output = {}

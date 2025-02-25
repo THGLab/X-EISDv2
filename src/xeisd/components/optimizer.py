@@ -47,7 +47,7 @@ class XEISD(object):
         self.pool_size = pool_size
 
 
-    def calc_scores(self, dtypes, ens_size, indices=None):
+    def calc_scores(self, dtypes, ens_size, pre_ratios=False, indices=None):
         '''
         Parameters
         ----------
@@ -57,6 +57,10 @@ class XEISD(object):
         ens_size : int
             Only used when indices not specified.
             Used to randomly select subset to score.
+        
+        pre_ratios : Bool
+            Whether or not to treat PRE data as intensity ratios.
+            Or defaults to distances.
         
         indices : ndarray, optional
             This is the fastest way to get the EISD score and RMSD of selected properties for a given set of indices.
@@ -98,7 +102,7 @@ class XEISD(object):
                 ))[:3]
         elif pre_name == dtypes:
             return pre_name, list(pre_optimization_ensemble(
-                self.exp_data, self.bc_data, ens_size, indices
+                self.exp_data, self.bc_data, ens_size, indices, pre_ratios,
                 ))[:3]
         elif rdc_name == dtypes:
             return rdc_name, list(rdc_optimization_ensemble(
@@ -117,6 +121,7 @@ class XEISD(object):
         self,
         eps_rnd,
         final_size,
+        pre_ratios=False,
         opt_type=opt_max,
         mode=eisd_run_all,
         beta=0.1,
@@ -134,6 +139,10 @@ class XEISD(object):
         
         final_size : int
             Final number of desired conformers.
+        
+        pre_ratios : Bool
+            Whether or not to treat PRE data as intensity ratios.
+            Or defaults to distances.
             
         mode : str or list
             Data types to optimize.
@@ -220,7 +229,7 @@ class XEISD(object):
                     if prop == pre_name:
                         new_scores[pre_name] = \
                             list(pre_optimization_ensemble(self.exp_data, 
-                            self.bc_data, final_size, None, old_scores[pre_name][2],
+                            self.bc_data, final_size, None, pre_ratios, old_scores[pre_name][2],  # noqa: E501
                             popped_structure, new_index))[:3]
                     if prop == rdc_name:
                         new_scores[rdc_name] = \
@@ -255,7 +264,7 @@ class XEISD(object):
             if not flags[prop]:
                 if prop == pre_name:
                     old_scores[pre_name][:2] = \
-                        pre_optimization_ensemble(self.exp_data, self.bc_data, final_size, indices)[:2]
+                        pre_optimization_ensemble(self.exp_data, self.bc_data, final_size, indices, pre_ratios=pre_ratios)[:2]  # noqa: E501
                 if prop == jc_name:
                     old_scores[jc_name][:2] = \
                         jc_optimization_ensemble(self.exp_data, self.bc_data, final_size, indices)[:2]
