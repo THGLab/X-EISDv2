@@ -539,7 +539,7 @@ def rh_optimization_ensemble(
    
     # optimization
     opt_params = calc_opt_params(bc, exp, exp_sigma, bc_sigma)
-    f, f_comps = calc_score(bc, exp, exp_sigma, bc_sigma, opt_params, weight=weights[rh_name])
+    f, f_comps = calc_score(bc, exp, exp_sigma, bc_sigma, opt_params, weight=weights[rh_name])  # noqa: E501
     
     error = (exp - bc) ** 2.0
     rmse = np.nanmean(error) ** 0.5

@@ -292,6 +292,7 @@ def add_argument_custom_bc_error(parser):
         default=None
         )
 
+
 def add_argument_custom_weights(parser):
     """Add argument for custom weights file."""
     parser.add_argument(
@@ -307,6 +308,7 @@ def add_argument_custom_weights(parser):
         type=str,
         default=None
         )
+
 
 def add_argument_number_conformers(parser):
     """Add argument for number of conformers in ensemble."""
