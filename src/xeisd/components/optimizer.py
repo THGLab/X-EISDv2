@@ -6,7 +6,13 @@ https://github.com/Oufan75/X-EISD/blob/master/eisd/optimizer.py
 """
 import numpy as np
 
-from xeisd.components import eisd_run_all, modes, opt_max, opt_mc
+from xeisd.components import (
+    default_weights,
+    eisd_run_all,
+    modes,
+    opt_max,
+    opt_mc,
+    )
 from xeisd.components.scorers import *
 
 
@@ -39,15 +45,24 @@ class XEISD(object):
         Number of residues per conformer
     pool_size : int
         Number of candidate conformers.
+    weights : dict
+        Custom weighting of different datatypes
     """
-    def __init__(self, exp_data, bc_data, nres, pool_size):
+    def __init__(self, exp_data, bc_data, nres, pool_size, weights):
         self.exp_data = exp_data
         self.bc_data = bc_data
         self.resnum = nres
         self.pool_size = pool_size
+        self.weights = weights
 
 
-    def calc_scores(self, dtypes, ens_size, pre_ratios=False, indices=None):
+    def calc_scores(
+        self,
+        dtypes,
+        ens_size,
+        pre_ratios=False,
+        indices=None,
+        ):
         '''
         Parameters
         ----------
@@ -82,35 +97,35 @@ class XEISD(object):
         # last "error" return is not used for X-EISD
         if jc_name == dtypes:
             return jc_name, list(jc_optimization_ensemble(
-                self.exp_data, self.bc_data, ens_size, indices
+                self.exp_data, self.bc_data, ens_size, indices, self.weights
                 ))
         elif saxs_name == dtypes:
             return saxs_name, list(saxs_optimization_ensemble(
-                self.exp_data, self.bc_data, indices, ens_size, self.resnum
+                self.exp_data, self.bc_data, indices, ens_size, self.resnum, self.weights  # noqa: E501
                 ))[:3]
         elif cs_name == dtypes:
             return cs_name, list(cs_optimization_ensemble(
-                self.exp_data, self.bc_data, ens_size, indices
+                self.exp_data, self.bc_data, ens_size, indices, self.weights
                 ))[:3]
         elif fret_name == dtypes:
             return fret_name, list(fret_optimization_ensemble(
-                self.exp_data, self.bc_data, ens_size, indices
+                self.exp_data, self.bc_data, ens_size, indices, self.weights
                 ))[:3]
         elif noe_name == dtypes:
             return noe_name, list(noe_optimization_ensemble(
-                self.exp_data, self.bc_data, ens_size, indices
+                self.exp_data, self.bc_data, ens_size, indices, self.weights
                 ))[:3]
         elif pre_name == dtypes:
             return pre_name, list(pre_optimization_ensemble(
-                self.exp_data, self.bc_data, ens_size, indices, pre_ratios,
+                self.exp_data, self.bc_data, ens_size, indices, self.weights, pre_ratios  # noqa: E501
                 ))[:3]
         elif rdc_name == dtypes:
             return rdc_name, list(rdc_optimization_ensemble(
-                self.exp_data, self.bc_data, ens_size, indices
+                self.exp_data, self.bc_data, ens_size, indices, self.weights
                 ))[:3]
         elif rh_name == dtypes:
             return rh_name, list(rh_optimization_ensemble(
-                self.exp_data, self.bc_data, ens_size, indices
+                self.exp_data, self.bc_data, ens_size, indices, self.weights
                 ))[:3]
         
         # code should not go here
