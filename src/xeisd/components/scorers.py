@@ -5,6 +5,8 @@ Inspired/imported from:
 * https://github.com/THGLab/X-EISD/blob/master/eisd/scorers.py
 * https://github.com/Oufan75/X-EISD/blob/master/eisd/scorers.py
 """
+from math import sqrt
+
 import numpy as np
 
 from xeisd.components import (
@@ -83,8 +85,9 @@ def calc_score(beta, exp, exp_sig, sig, opt_params, gamma=1.0, weight=1):
     f = f_q + f_err
     f_comps = [f_q, f_err]
     
-    mean_f = sum(f) / len(f)
-    final_f = weight * mean_f
+    # Normalize by sqrt(n) to reduce bias by number of scores
+    scaled_f = sum(f) / sqrt(len(f))
+    final_f = weight * scaled_f
     if weight == 0 or weight == 0.0:
         final_f = float('-inf')
     return final_f, f_comps
@@ -158,8 +161,11 @@ def vect_calc_score_jc(
     err = exp_j - opt_params[:, 0] * alpha2 - opt_params[:, 1] * alpha1 - opt_params[:, 2]  # noqa: E501
     f_err = normal_loglike(err, 0, exp_sig)
     f = f_a + f_b + f_c + f_err
-    mean_f = sum(f) / len(f)
-    final_f = weight * mean_f
+    
+    # Normalize by sqrt(n) to reduce bias by number of scores
+    scaled_f = sum(f) / sqrt(len(f))
+    final_f = weight * scaled_f
+    
     f_comps = [f_a, f_b, f_c, f_err]
     
     if weight == 0 or weight == 0.0:
