@@ -28,6 +28,7 @@ USAGE:
         [--pdb-structures] \
         [--nconfs] \
         [--nres] \
+        [--custom-weights] \
         [--custom-error] \
         [--output] \
         [--ncores]

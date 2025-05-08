@@ -218,45 +218,45 @@ class XEISD(object):
                     if prop == saxs_name:
                         new_scores[saxs_name] = \
                             list(saxs_optimization_ensemble(self.exp_data, 
-                            self.bc_data, None, final_size, self.resnum,
+                            self.bc_data, None, final_size, self.resnum, self.weights,
                             old_scores[saxs_name][2], popped_structure, new_index))[:3]
                     if prop == cs_name:
                         new_scores[cs_name] = \
                             list(cs_optimization_ensemble(self.exp_data, 
-                            self.bc_data, final_size, None, old_scores[cs_name][2],
-                            popped_structure, new_index))[:3]
+                            self.bc_data, final_size, None, self.weights, 
+                            old_scores[cs_name][2], popped_structure, new_index))[:3]
                     if prop == fret_name:
                         new_scores[fret_name] = \
                             list(fret_optimization_ensemble(self.exp_data, 
-                            self.bc_data, final_size, None, old_scores[fret_name][2],
-                            popped_structure, new_index))[:3]
+                            self.bc_data, final_size, None, self.weights,
+                            old_scores[fret_name][2], popped_structure, new_index))[:3]
                     if prop == jc_name:
                         new_scores[jc_name] = \
                             list(jc_optimization_ensemble(self.exp_data, 
-                            self.bc_data, final_size, None, old_scores[jc_name][3],
-                            popped_structure, new_index))
+                            self.bc_data, final_size, None, self.weights,
+                            old_scores[jc_name][3], popped_structure, new_index))
                     if prop == noe_name:
                         new_scores[noe_name] = \
                             list(noe_optimization_ensemble(self.exp_data, 
-                            self.bc_data, final_size, None, old_scores[noe_name][2],
-                            popped_structure, new_index))[:3]
-
+                            self.bc_data, final_size, None, self.weights,
+                            old_scores[noe_name][2], popped_structure, new_index))[:3]
                     if prop == pre_name:
                         new_scores[pre_name] = \
                             list(pre_optimization_ensemble(self.exp_data, 
-                            self.bc_data, final_size, None, pre_ratios, old_scores[pre_name][2],  # noqa: E501
+                            self.bc_data, final_size, None, self.weights,
+                            pre_ratios, old_scores[pre_name][2],
                             popped_structure, new_index))[:3]
                     if prop == rdc_name:
                         new_scores[rdc_name] = \
                             list(rdc_optimization_ensemble(self.exp_data, 
-                            self.bc_data, final_size, None, old_scores[rdc_name][2],
-                            popped_structure, new_index))[:3]
+                            self.bc_data, final_size, None, self.weights,
+                            old_scores[rdc_name][2], popped_structure, new_index))[:3]
                             
                     if prop == rh_name:
                         new_scores[rh_name] \
                             = list(rh_optimization_ensemble(self.exp_data, 
-                            self.bc_data, final_size, None, old_scores[rh_name][2],
-                            popped_structure, new_index))[:3]
+                            self.bc_data, final_size, None, self.weights,
+                            old_scores[rh_name][2], popped_structure, new_index))[:3]
         
             old_total_score = np.sum([old_scores[key][1] for key in old_scores])
             new_total_score = np.sum([new_scores[key][1] for key in new_scores])
@@ -279,25 +279,32 @@ class XEISD(object):
             if not flags[prop]:
                 if prop == pre_name:
                     old_scores[pre_name][:2] = \
-                        pre_optimization_ensemble(self.exp_data, self.bc_data, final_size, indices, pre_ratios=pre_ratios)[:2]  # noqa: E501
+                        pre_optimization_ensemble(self.exp_data, self.bc_data,
+                            final_size, indices, weights=self.weights, pre_ratios=pre_ratios)[:2]
                 if prop == jc_name:
                     old_scores[jc_name][:2] = \
-                        jc_optimization_ensemble(self.exp_data, self.bc_data, final_size, indices)[:2]
+                        jc_optimization_ensemble(self.exp_data, self.bc_data,
+                            final_size, indices, weights=self.weights)[:2]
                 if prop == cs_name:
                     old_scores[cs_name][:2] = \
-                        cs_optimization_ensemble(self.exp_data, self.bc_data, final_size, indices)[:2]
+                        cs_optimization_ensemble(self.exp_data, self.bc_data,
+                            final_size, indices, weights=self.weights)[:2]
                 if prop == fret_name:
                     old_scores[fret_name][:2] = \
-                        fret_optimization_ensemble(self.exp_data, self.bc_data, final_size, indices)[:2]
+                        fret_optimization_ensemble(self.exp_data, self.bc_data,
+                            final_size, indices, weights=self.weights)[:2]
                 if prop == rh_name:
                     old_scores[rh_name][:2] = \
-                        rh_optimization_ensemble(self.exp_data, self.bc_data, final_size, indices)[:2]
+                        rh_optimization_ensemble(self.exp_data, self.bc_data,
+                            final_size, indices, weights=self.weights)[:2]
                 if prop == rdc_name:
                     old_scores[rdc_name][:2] = \
-                        rdc_optimization_ensemble(self.exp_data, self.bc_data, final_size, indices)[:2]
+                        rdc_optimization_ensemble(self.exp_data, self.bc_data,
+                            final_size, indices, weights=self.weights)[:2]
                 if prop == saxs_name:
                     old_scores[saxs_name][:2] = \
-                        saxs_optimization_ensemble(self.exp_data, self.bc_data, indices, final_size, self.resnum)[:2]  # noqa: E501
+                        saxs_optimization_ensemble(self.exp_data, self.bc_data,
+                            indices, final_size, self.resnum, weights=self.weights)[:2]
             # aggregate results
             s.extend(old_scores[prop][:2])
         
