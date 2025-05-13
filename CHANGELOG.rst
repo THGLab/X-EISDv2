@@ -2,6 +2,8 @@
 Changelog
 =========
 
+* Minor bugfix for parsing of data files for ``optimize`` module
+
 v0.2.2 (2025-02-25)
 ------------------------------------------------------------
 
