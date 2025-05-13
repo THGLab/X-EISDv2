@@ -2,6 +2,9 @@
 Changelog
 =========
 
+* Normalize X-EISD scores so number of datapoints won't bias optimization
+* User-adjustable custom weighting for optimization protocol
+
 v0.2.3 (2025-05-13)
 ------------------------------------------------------------
 

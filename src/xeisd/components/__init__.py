@@ -73,6 +73,16 @@ default_bc_errors = {
     cs_name: {'C': 0.84, 'CA': 0.81, 'CB': 1.00, 'H': 0.31, 'HA': 0.19, 'N': 1.81},  # noqa: E501
     jc_name: {'A': np.sqrt(0.14), 'B': np.sqrt(0.03), 'C': np.sqrt(0.08)},
     }
+default_weights = {
+    pre_name: 1,
+    noe_name: 1,
+    saxs_name: 1,
+    fret_name: 1,
+    rh_name: 1,
+    rdc_name: 1,
+    cs_name: 1,
+    jc_name: 1,
+    }
 jc_bc_mu = {'A': 6.51, 'B': -1.76, 'C': 1.6}
 
 rmse_idx = 0

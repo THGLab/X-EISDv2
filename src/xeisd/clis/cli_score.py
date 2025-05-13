@@ -28,6 +28,7 @@ USAGE:
         [--pdb-structures] \
         [--nconfs] \
         [--nres] \
+        [--custom-weights] \
         [--custom-error] \
         [--output] \
         [--ncores]
@@ -52,6 +53,7 @@ from xeisd.components import (
     avg_bc_idx,
     cs_name,
     default_bc_errors,
+    default_weights,
     exp_atmID,
     exp_idx,
     exp_resnum,
@@ -67,7 +69,11 @@ from xeisd.components.helper import (
     selective_calculator,
     )
 from xeisd.components.optimizer import XEISD
-from xeisd.components.parser import parse_bc_errors, parse_data
+from xeisd.components.parser import (
+    parse_bc_errors,
+    parse_custom_weights,
+    parse_data,
+    )
 from xeisd.libs import libcli
 from xeisd.logger import S, T, init_files, report_on_crash
 
@@ -101,6 +107,7 @@ libcli.add_argument_pdb_files(ap)
 libcli.add_argument_number_conformers(ap)
 libcli.add_argument_number_residues(ap)
 libcli.add_argument_custom_bc_error(ap)
+libcli.add_argument_custom_weights(ap)
 libcli.add_argument_output(ap)
 libcli.add_argument_ncores(ap)
 
@@ -122,6 +129,7 @@ def main(
         output,
         pre_ratios=False,
         custom_error=None,
+        custom_weights=None,
         pdb_files=None,
         ncores=1,
         tmpdir=TMPDIR,
@@ -152,6 +160,9 @@ def main(
     custom_error : str or Path, optional
         Path to the file containing custom back-calculator errors.
     
+    custom_weights : str or Path, optional
+        Path to the file containing custom weights.
+    
     output : str or Path, optional
         Path to the folder to store eisd outputs.
         
@@ -167,6 +178,11 @@ def main(
         bc_errors = parse_bc_errors(custom_error)
     else:
         bc_errors = default_bc_errors
+    
+    if custom_weights:
+        weights = parse_custom_weights(custom_weights)
+    else:
+        weights = default_weights
 
     # Processes PDB files if given
     _istarfile = False
@@ -285,7 +301,7 @@ def main(
             return
     
     dtypes = [module for module in exp_data]
-    eisd_ens = XEISD(exp_data, back_data, nres, nconfs)
+    eisd_ens = XEISD(exp_data, back_data, nres, nconfs, weights)
     log.info(T('Starting Scoring Function'))
     execute = partial(
         report_on_crash,
