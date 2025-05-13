@@ -220,10 +220,10 @@ def meta_data(fpath):
     
     for module in eisd_modules:
         for exp in exp_paths:
-            if module in exp:
+            if exp.endswith(f'.{module}'):
                 EXP_DATA_FILENAMES[module] = exp
         for bc in back_paths:
-            if module in bc:
+            if bc.endswith(f'.{module}'):
                 BACK_DATA_FILENAMES[module] = bc
 
     meta = {
