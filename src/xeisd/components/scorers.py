@@ -85,8 +85,14 @@ def calc_score(beta, exp, exp_sig, sig, opt_params, gamma=1.0, weight=1):
     f = f_q + f_err
     f_comps = [f_q, f_err]
     
-    # Normalize by sqrt(n) to reduce bias by number of scores
-    scaled_f = sum(f) / sqrt(len(f))
+    # Normalize by sqrt(n_valid) to reduce bias by number of valid scores
+    # Ignore NaNs: sum non-NaNs and divide by count of non-NaNs
+    valid_count = np.sum(~np.isnan(f))
+    if valid_count == 0:
+        scaled_f = 0.0
+    else:
+        scaled_f = np.nansum(f) / sqrt(valid_count)
+    
     final_f = weight * scaled_f
     if weight == 0 or weight == 0.0:
         final_f = float('-inf')
@@ -162,8 +168,13 @@ def vect_calc_score_jc(
     f_err = normal_loglike(err, 0, exp_sig)
     f = f_a + f_b + f_c + f_err
     
-    # Normalize by sqrt(n) to reduce bias by number of scores
-    scaled_f = sum(f) / sqrt(len(f))
+    # Normalize by sqrt(n_valid) to reduce bias by number of valid scores
+    # Ignore NaNs: sum non-NaNs and divide by count of non-NaNs
+    valid_count = np.sum(~np.isnan(f))
+    if valid_count == 0:
+        scaled_f = 0.0
+    else:
+        scaled_f = np.nansum(f) / sqrt(valid_count)
     final_f = weight * scaled_f
     
     f_comps = [f_a, f_b, f_c, f_err]
