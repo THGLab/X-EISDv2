@@ -6,6 +6,9 @@ Changelog
 * User-adjustable custom weighting for optimization protocol
 * Fix bug with NaN values in scoring functions by ignoring them in calculations
 
+v0.2.4 (2025-06-10)
+------------------------------------------------------------
+
 v0.2.3 (2025-05-13)
 ------------------------------------------------------------
 
