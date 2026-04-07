@@ -77,6 +77,7 @@ import pandas as pd
 from xeisd.components import (
     cs_name,
     default_bc_errors,
+    default_weights,
     exp_atmID,
     exp_dist_val,
     exp_err,
@@ -250,6 +251,35 @@ def parse_bc_errors(fpath):
                 custom_bc_errors[splitted[0]] = dictconv
     
     return custom_bc_errors
+
+
+def parse_custom_weights(fpath):
+    """
+    Parse a text file containing customized weights for different datatypes.
+    
+    FORMATTING:
+    In a .TXT file where the first column is the name of the module
+    the second column will be the custom error.
+    
+    For example:
+    pre 5
+    noe 2
+    fret 4
+    cs 1
+    """
+    custom_weights = default_weights
+    
+    with open(fpath, mode='r') as f:
+        lines = f.readlines()
+        for line in lines:
+            splitted = line.split()
+            try:
+                custom_weights[splitted[0]] = float(splitted[1])
+            except ValueError:
+                dictconv = ast.literal_eval(splitted[1])
+                custom_weights[splitted[0]] = dictconv
+    
+    return custom_weights
     
 
 def parse_data(filenames, mode, bc_errors=default_bc_errors):

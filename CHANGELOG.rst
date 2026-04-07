@@ -2,8 +2,14 @@
 Changelog
 =========
 
+* Normalize X-EISD scores so number of datapoints won't bias optimization
+* User-adjustable custom weighting for optimization protocol
+* Fix bug with NaN values in scoring functions by ignoring them in calculations
+
 v0.2.4 (2025-06-10)
 ------------------------------------------------------------
+
+* Updated license file
 
 v0.2.3 (2025-05-13)
 ------------------------------------------------------------

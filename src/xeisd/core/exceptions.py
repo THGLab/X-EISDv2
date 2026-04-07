@@ -35,7 +35,7 @@ class SPyCiPDBException(Exception):
 
     errmsg = 'An unknnown error as occurred.'
 
-    def __init__(self, *args, errmsg=None):
+    def __init__(self, *args, errmsg=None):  # noqa: B042
         # SPyCiPDBException(errmsg='Custom error msg')
         if errmsg is not None:
             assert isinstance(errmsg, str), f'wrong errmsg type: {type(errmsg)}'

@@ -283,9 +283,26 @@ def add_argument_custom_bc_error(parser):
         '-ce',
         '--custom-error',
         help=(
-            'Path to file for custom back-calculator errors. '
+            'Path to text file for custom back-calculator errors. '
             'First column should be module name, second column should be '
-            'error of interest. Do not add whitespace other than to '
+            'error of interest. Only add one whitespace other to '
+            'separate columns.'
+            ),
+        type=str,
+        default=None
+        )
+
+
+def add_argument_custom_weights(parser):
+    """Add argument for custom weights file."""
+    parser.add_argument(
+        '-cw',
+        '--custom-weights',
+        help=(
+            'Path to text file for custom weights if you trust certain '
+            'experimental datatypes more than others. '
+            'First column should be module name, second column should be '
+            'error of interest. Only add one whitespace other to '
             'separate columns.'
             ),
         type=str,

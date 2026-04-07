@@ -5,6 +5,8 @@ Inspired/imported from:
 * https://github.com/THGLab/X-EISD/blob/master/eisd/scorers.py
 * https://github.com/Oufan75/X-EISD/blob/master/eisd/scorers.py
 """
+from math import sqrt
+
 import numpy as np
 
 from xeisd.components import (
@@ -75,14 +77,26 @@ def normal_loglike(x, mu, sig, gamma=1.0, eps=1e-10, min_val=1e-300):
     return logp
 
 
-def calc_score(beta, exp, exp_sig, sig, opt_params, gamma=1.0):
+def calc_score(beta, exp, exp_sig, sig, opt_params, gamma=1.0, weight=1):
     """Calculate X-EISD score."""
     f_q = normal_loglike(opt_params, 0, sig, gamma)
     err = exp - opt_params - beta
     f_err = normal_loglike(err, 0, exp_sig, gamma)
     f = f_q + f_err
     f_comps = [f_q, f_err]
-    return f, f_comps
+    
+    # Normalize by sqrt(n_valid) to reduce bias by number of valid scores
+    # Ignore NaNs: sum non-NaNs and divide by count of non-NaNs
+    valid_count = np.sum(~np.isnan(f))
+    if valid_count == 0:
+        scaled_f = 0.0
+    else:
+        scaled_f = np.nansum(f) / sqrt(valid_count)
+    
+    final_f = weight * scaled_f
+    if weight == 0 or weight == 0.0:
+        final_f = float('-inf')
+    return final_f, f_comps
 
 
 def calc_gamma(len_saxs, num_res, qmax, qmin):
@@ -133,7 +147,8 @@ def vect_calc_score_jc(
         exp_sig,
         opt_params,
         mus,
-        sigs
+        sigs,
+        weight=1
         ):
     """
     Calculate score for a single phi angle/residue.
@@ -152,9 +167,22 @@ def vect_calc_score_jc(
     err = exp_j - opt_params[:, 0] * alpha2 - opt_params[:, 1] * alpha1 - opt_params[:, 2]  # noqa: E501
     f_err = normal_loglike(err, 0, exp_sig)
     f = f_a + f_b + f_c + f_err
+    
+    # Normalize by sqrt(n_valid) to reduce bias by number of valid scores
+    # Ignore NaNs: sum non-NaNs and divide by count of non-NaNs
+    valid_count = np.sum(~np.isnan(f))
+    if valid_count == 0:
+        scaled_f = 0.0
+    else:
+        scaled_f = np.nansum(f) / sqrt(valid_count)
+    final_f = weight * scaled_f
+    
     f_comps = [f_a, f_b, f_c, f_err]
     
-    return f, f_comps
+    if weight == 0 or weight == 0.0:
+        final_f = float('-inf')
+    
+    return final_f, f_comps
 
 
 # ------------------------------------------------------------
@@ -169,6 +197,7 @@ def saxs_optimization_ensemble(
         indices,
         ens_size,
         nres,
+        weights,
         old_vals=None,
         popped_structure=None,
         new_index=None,
@@ -195,7 +224,7 @@ def saxs_optimization_ensemble(
         np.min(exp_data[saxs_name].data[exp_idx])
         )
     
-    f, f_comps = calc_score(bc_saxs, exp_saxs, exp_sigma, bc_data[saxs_name].sigma, opt_params, gamma=g)  # noqa: E501
+    f, f_comps = calc_score(bc_saxs, exp_saxs, exp_sigma, bc_data[saxs_name].sigma, opt_params, gamma=g, weight=weights[saxs_name])  # noqa: E501
 
     error = (exp_saxs - bc_saxs) ** 2
     rmse = np.nanmean(error) ** 0.5
@@ -209,6 +238,7 @@ def cs_optimization_ensemble(
         bc_data,
         ens_size,
         indices,
+        weights,
         old_vals=None,
         popped_structure=None,
         new_index=None,
@@ -249,7 +279,7 @@ def cs_optimization_ensemble(
     bc_sigma = np.array([bc_data[cs_name].sigma[atom_type] for atom_type in atom_types])  # noqa: E501
     
     opt_params = calc_opt_params(bc_cs, exp_cs, exp_sigma, bc_sigma)
-    f, f_comps = calc_score(bc_cs, exp_cs, exp_sigma, bc_sigma, opt_params)
+    f, f_comps = calc_score(bc_cs, exp_cs, exp_sigma, bc_sigma, opt_params, weight=weights[cs_name])  # noqa: E501
     
     error = (exp_cs - bc_cs) ** 2.0
     rmse = np.nanmean(error) ** 0.5
@@ -263,6 +293,7 @@ def fret_optimization_ensemble(
         bc_data,
         ens_size,
         indices,
+        weights,
         old_vals=None,
         popped_structure=None,
         new_index=None,
@@ -283,7 +314,7 @@ def fret_optimization_ensemble(
 
     # optimization
     opt_params = calc_opt_params(bc, exp, exp_sigma, bc_sigma)
-    f, f_comps = calc_score(bc, exp, exp_sigma, bc_sigma, opt_params)
+    f, f_comps = calc_score(bc, exp, exp_sigma, bc_sigma, opt_params, weight=weights[fret_name])  # noqa: E501
 
     error = (exp - bc) ** 2.0
     rmse = np.nanmean(error) ** 0.5
@@ -297,6 +328,7 @@ def jc_optimization_ensemble(
         bc_data,
         ens_size,
         indices,
+        weights,
         old_vals=None,
         popped_structure=None,
         new_index=None,
@@ -339,7 +371,8 @@ def jc_optimization_ensemble(
         exp_sigma,
         opt_params,
         bc_mu,
-        bc_sigma
+        bc_sigma,
+        weight=weights[jc_name]
         )
     
     error = (opt_params[:, 0] * bc_alpha2 + opt_params[:, 1] * bc_alpha1 + opt_params[:, 2] - exp) ** 2.0  # noqa: E501
@@ -355,6 +388,7 @@ def noe_optimization_ensemble(
         bc_data,
         ens_size,
         indices,
+        weights,
         old_vals=None,
         popped_structure=None,
         new_index=None,
@@ -388,7 +422,7 @@ def noe_optimization_ensemble(
     
     # optimization
     opt_params = calc_opt_params(avg_distance, exp_distance, exp_sigma, bc_data[noe_name].sigma)  # noqa: E501
-    f, f_comps = calc_score(avg_distance, exp_distance, exp_sigma, bc_data[noe_name].sigma, opt_params)  # noqa: E501
+    f, f_comps = calc_score(avg_distance, exp_distance, exp_sigma, bc_data[noe_name].sigma, opt_params, weight=weights[noe_name])  # noqa: E501
     
     error = (exp_distance - avg_distance) ** 2.0
     rmse = np.nanmean(error) ** 0.5
@@ -402,6 +436,7 @@ def pre_optimization_ensemble(
         bc_data,
         ens_size,
         indices,
+        weights,
         pre_ratios=False,
         old_vals=None,
         popped_structure=None,
@@ -434,7 +469,7 @@ def pre_optimization_ensemble(
     
         # optimization
         opt_params = calc_opt_params(bc, exp_distance, exp_sigma, bc_sigma)
-        f, f_comps = calc_score(bc, exp_distance, exp_sigma, bc_sigma, opt_params)  # noqa: E501
+        f, f_comps = calc_score(bc, exp_distance, exp_sigma, bc_sigma, opt_params, weight=weights[pre_name])  # noqa: E501
     
         error = (exp_distance - bc) ** 2.0
         rmse = np.nanmean(error) ** 0.5
@@ -453,7 +488,7 @@ def pre_optimization_ensemble(
 
             # optimization
         opt_params = calc_opt_params(avg_distance, exp_distance, exp_sigma, bc_data[pre_name].sigma)  # noqa: E501
-        f, f_comps = calc_score(avg_distance, exp_distance, exp_sigma, bc_data[pre_name].sigma, opt_params)  # noqa: E501
+        f, f_comps = calc_score(avg_distance, exp_distance, exp_sigma, bc_data[pre_name].sigma, opt_params, weight=weights[pre_name])  # noqa: E501
 
         error = (exp_distance - avg_distance) ** 2.0
         rmse = np.nanmean(error) ** 0.5
@@ -467,6 +502,7 @@ def rdc_optimization_ensemble(
         bc_data,
         ens_size,
         indices,
+        weights,
         old_vals=None,
         popped_structure=None,
         new_index=None,
@@ -486,7 +522,7 @@ def rdc_optimization_ensemble(
 
     # optimization
     opt_params = calc_opt_params(bc, exp, exp_sigma, bc_data[rdc_name].sigma)
-    f, f_comps = calc_score(bc, exp, exp_sigma, bc_data[rdc_name].sigma, opt_params)  # noqa: E501
+    f, f_comps = calc_score(bc, exp, exp_sigma, bc_data[rdc_name].sigma, opt_params, weight=weights[rdc_name])  # noqa: E501
     
     error = (exp - bc) ** 2.0
     rmse = np.nanmean(error) ** 0.5
@@ -500,6 +536,7 @@ def rh_optimization_ensemble(
         bc_data,
         ens_size,
         indices,
+        weights,
         old_vals=None,
         popped_structure=None,
         new_index=None,
@@ -519,7 +556,7 @@ def rh_optimization_ensemble(
    
     # optimization
     opt_params = calc_opt_params(bc, exp, exp_sigma, bc_sigma)
-    f, f_comps = calc_score(bc, exp, exp_sigma, bc_sigma, opt_params)
+    f, f_comps = calc_score(bc, exp, exp_sigma, bc_sigma, opt_params, weight=weights[rh_name])  # noqa: E501
     
     error = (exp - bc) ** 2.0
     rmse = np.nanmean(error) ** 0.5
